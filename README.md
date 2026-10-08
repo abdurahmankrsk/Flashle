@@ -1,6 +1,10 @@
 # ⚡ Flashle — The Daily CW The Flash Guessing Game
 
+[![CI](https://github.com/abdurahmankrsk/flashle/actions/workflows/ci.yml/badge.svg)](https://github.com/abdurahmankrsk/flashle/actions/workflows/ci.yml)
+
 > An authentic, daily character guessing game based on **The CW's The Flash (2014–2023)**.
+>
+> ⚡ **Play Live**: [https://flashle-game.vercel.app/](https://flashle-game.vercel.app/)
 
 **Flashle** challenges fans to identify a mystery Arrowverse character every day using deductive reasoning, attribute clues, powers, and show lore.
 
