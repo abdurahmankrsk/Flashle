@@ -41,17 +41,17 @@ export const AttributeTile: React.FC<AttributeTileProps> = ({
         <span
           className={`font-tech font-extrabold ${
             isLong
-              ? 'text-[9px] sm:text-[11px] md:text-xs'
-              : 'text-[11px] sm:text-sm md:text-base'
+              ? 'text-[10px] sm:text-[11px] md:text-xs'
+              : 'text-xs sm:text-sm md:text-base'
           } tracking-wide leading-tight text-center break-words drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]`}
         >
           {value}
         </span>
         {direction && direction !== 'equal' && (
-          <span className="shrink-0 ml-0.5 text-[#fef08a] drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)] flex items-center justify-center">
+          <span className="shrink-0 ml-1 text-[#fef08a] drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)] flex items-center justify-center">
             {direction === 'higher' ? (
               <svg
-                className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 fill-current"
+                className="w-4 h-4 md:w-5 md:h-5 fill-current"
                 viewBox="0 0 24 24"
                 aria-label="Higher season"
               >
@@ -60,7 +60,7 @@ export const AttributeTile: React.FC<AttributeTileProps> = ({
               </svg>
             ) : (
               <svg
-                className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 fill-current"
+                className="w-4 h-4 md:w-5 md:h-5 fill-current"
                 viewBox="0 0 24 24"
                 aria-label="Lower season"
               >

@@ -20,11 +20,10 @@ export const Toast: React.FC<ToastProps> = ({ message, onClose, duration = 2500 
 
   return (
     <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all duration-300">
-      <div className="bg-[#10121d] border-2 border-[#dc2626]/70 text-white font-tech font-bold uppercase tracking-wider px-4 py-2 rounded-[4px] shadow-2xl shadow-black/80 flex items-center gap-2 backdrop-blur-md text-sm">
-        <FlashEmblem size={14} variant="bolt-only" />
+      <div className="bg-[#10121d] border-2 border-[#dc2626]/70 text-white font-tech font-bold uppercase tracking-wider px-4 py-2.5 rounded-[6px] shadow-2xl shadow-black/80 flex items-center gap-2.5 backdrop-blur-md text-xs sm:text-sm">
+        <FlashEmblem size={22} variant="emblem" />
         <span>{message}</span>
       </div>
     </div>
   );
 };
-

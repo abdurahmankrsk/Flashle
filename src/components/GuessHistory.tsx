@@ -50,20 +50,23 @@ export const GuessHistory: React.FC<GuessHistoryProps> = ({
 
   return (
     <div className="w-full max-w-5xl md:max-w-6xl mx-auto px-2 sm:px-4 my-4">
-      {/* Table Column Headers Bar — Clear, large, crisp font */}
-      <div className="w-full mb-2 select-none">
-        <div className="grid grid-cols-8 gap-1.5 sm:gap-2.5 text-center text-xs sm:text-sm md:text-base font-tech font-extrabold tracking-wider uppercase text-zinc-100">
-          <div><span className="hidden sm:inline">CHARACTER</span><span className="sm:hidden">CHAR</span></div>
-          <div>GENDER</div>
-          <div><span className="hidden sm:inline">SPECIES</span><span className="sm:hidden">SPEC</span></div>
-          <div><span className="hidden sm:inline">POWERS</span><span className="sm:hidden">POW</span></div>
-          <div><span className="hidden sm:inline">ALIGNMENT</span><span className="sm:hidden">ALIGN</span></div>
-          <div><span className="hidden sm:inline">DEBUT</span><span className="sm:hidden">DEBUT</span></div>
-          <div><span className="hidden sm:inline">ORIGIN</span><span className="sm:hidden">EARTH</span></div>
-          <div><span className="hidden sm:inline">AFFILIATION</span><span className="sm:hidden">TEAM</span></div>
-        </div>
-        <hr className="border-t-2 border-white/20 mt-1.5 mb-2.5" />
-      </div>
+      {/* Scroll container on phone, fits naturally on desktop */}
+      <div className="w-full overflow-x-auto pb-3 custom-scrollbar -mx-1 px-1 sm:mx-0 sm:px-0">
+        <div className="min-w-[680px] md:min-w-0 w-full">
+          {/* Table Column Headers Bar — Clear, large, crisp font */}
+          <div className="w-full mb-2 select-none">
+            <div className="grid grid-cols-8 gap-2 sm:gap-2.5 text-center text-xs sm:text-sm md:text-base font-tech font-extrabold tracking-wider uppercase text-zinc-100">
+              <div>CHARACTER</div>
+              <div>GENDER</div>
+              <div>SPECIES</div>
+              <div>POWERS</div>
+              <div>ALIGNMENT</div>
+              <div>DEBUT</div>
+              <div>ORIGIN</div>
+              <div>AFFILIATION</div>
+            </div>
+            <hr className="border-t-2 border-white/20 mt-1.5 mb-2.5" />
+          </div>
 
       {/* Grid of Guess Rows — Exactly 8 squares per row, scaled up and clear */}
       <div className="space-y-2 sm:space-y-3">
@@ -72,15 +75,15 @@ export const GuessHistory: React.FC<GuessHistoryProps> = ({
           const nameLen = guess.character.name.length;
           const nameFontSize =
             nameLen > 16
-              ? 'text-[7.5px] sm:text-[9.5px] md:text-[11px]'
+              ? 'text-[8.5px] sm:text-[9.5px] md:text-[11px]'
               : nameLen > 12
-              ? 'text-[8.5px] sm:text-[10.5px] md:text-xs'
-              : 'text-[9.5px] sm:text-xs md:text-sm';
+              ? 'text-[9.5px] sm:text-[10.5px] md:text-xs'
+              : 'text-[10.5px] sm:text-xs md:text-sm';
 
           return (
             <div
               key={`${guess.character.id}-${comparisons.length - index}`}
-              className="grid grid-cols-8 gap-1.5 sm:gap-2.5 items-center w-full"
+              className="grid grid-cols-8 gap-2 sm:gap-2.5 items-center w-full"
             >
               {/* Column 1: Character Portrait Square (High quality, smooth downscaling) */}
               <div
@@ -152,6 +155,8 @@ export const GuessHistory: React.FC<GuessHistoryProps> = ({
             </div>
           );
         })}
+      </div>
+        </div>
       </div>
     </div>
   );

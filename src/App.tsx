@@ -137,6 +137,11 @@ export const App: React.FC = () => {
       .map((char) => compareGuess(char, currentSecret));
   }, [currentGuesses, currentSecret]);
 
+  // Handle closing Toast
+  const handleCloseToast = useCallback(() => {
+    setToastMessage(null);
+  }, []);
+
   // Handle closing How To Play
   const handleCloseHowToPlay = () => {
     setShowHowToPlay(false);
@@ -214,8 +219,7 @@ export const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-transparent text-gray-100 flex flex-col selection:bg-[#dc2626] selection:text-white">
       {/* Toast Notification */}
-
-      <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
+      <Toast message={toastMessage} onClose={handleCloseToast} />
 
       {/* Main Header */}
       <Header
