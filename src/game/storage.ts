@@ -16,7 +16,7 @@ export interface PlayerStats {
 }
 
 const STORAGE_KEYS = {
-  DAILY_STATE: 'flashle_daily_state_v2',
+  DAILY_STATE: 'flashle_daily_state_v3',
   STATS: 'flashle_stats_v1',
   SETTINGS: 'flashle_settings_v1',
 };
