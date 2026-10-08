@@ -1,0 +1,24 @@
+<svg width="64" height="64" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="goldRing" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="45%" stop-color="#eab308" />
+      <stop offset="100%" stop-color="#854d0e" />
+    </linearGradient>
+    <radialGradient id="chestRed" cx="50%" cy="50%" r="50%">
+      <stop offset="35%" stop-color="#dc2626" />
+      <stop offset="85%" stop-color="#991b1b" />
+      <stop offset="100%" stop-color="#580d0d" />
+    </radialGradient>
+    <linearGradient id="boltGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fffbeb" />
+      <stop offset="25%" stop-color="#fde047" />
+      <stop offset="70%" stop-color="#eab308" />
+      <stop offset="100%" stop-color="#ca8a04" />
+    </linearGradient>
+  </defs>
+  <circle cx="50" cy="50" r="47" stroke="url(#goldRing)" stroke-width="6" fill="#08090e" />
+  <circle cx="50" cy="50" r="41" fill="url(#chestRed)" stroke="#380606" stroke-width="2" />
+  <polygon points="70,8 22,38 38,38 16,66 32,66 12,94 66,62 50,62 84,32 68,32 90,8" fill="url(#boltGold)" stroke="#78350f" stroke-width="2.5" stroke-linejoin="miter" />
+  <polygon points="70,8 22,38 38,38 16,66 32,66 12,94 26,76 42,50 56,26 70,8" fill="#ffffff" opacity="0.45" />
+</svg>
