@@ -65,7 +65,7 @@ export function generateShareText(
     ? `Solved in ${guessCount} ${guessCount === 1 ? 'guess' : 'guesses'} ⚡`
     : `Ran out of tachyons 🥀`;
 
-  return `${header}\n\n${grid}\n\n${footer}\nPlay at: https://flashle.vercel.app`;
+  return `${header}\n\n${grid}\n\n${footer}\nPlay at: `;
 }
 
 export async function shareResult(
