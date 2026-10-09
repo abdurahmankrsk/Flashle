@@ -4,23 +4,25 @@ export function generateShareText(
   dayNumber: number,
   comparisons: GuessComparison[],
   isWon: boolean,
-  maxGuesses: number = 8
+  maxGuesses: number = 8,
+  difficulty?: string,
+  mode: 'daily' | 'practice' | 'archive' = 'daily'
 ): string {
   const guessCount = comparisons.length;
   const score = isWon ? `${guessCount}/${maxGuesses}` : `X/${maxGuesses}`;
-
   const formattedDay = String(dayNumber).padStart(4, '0');
-  const header = `⚡ Flashle #${formattedDay} — ${score}`;
+
+  const diffTag = difficulty ? ` [${difficulty}]` : '';
+  let header = `⚡ Flashle #${formattedDay}${diffTag} — ${score}`;
+  if (mode === 'practice') {
+    header = `⚡ Flashle Practice${diffTag} — ${score}`;
+  } else if (mode === 'archive') {
+    header = `⚡ Flashle Archive #${formattedDay}${diffTag} — ${score}`;
+  }
 
   const grid = comparisons
     .map((comp) => {
       const gEmoji = comp.gender.status === 'correct' ? '🟩' : '🟥';
-      const aEmoji =
-        comp.alignment.status === 'correct'
-          ? '🟩'
-          : comp.alignment.status === 'partial'
-          ? '🟨'
-          : '🟥';
       const spEmoji =
         comp.species.status === 'correct'
           ? '🟩'
@@ -33,7 +35,13 @@ export function generateShareText(
           : (comp.power || comp.speedster).status === 'partial'
           ? '🟨'
           : '🟥';
-      
+      const aEmoji =
+        comp.alignment.status === 'correct'
+          ? '🟩'
+          : comp.alignment.status === 'partial'
+          ? '🟨'
+          : '🟥';
+
       let sEmoji = '🟥';
       if (comp.firstSeason.status === 'correct') {
         sEmoji = '🟩';
@@ -61,11 +69,11 @@ export function generateShareText(
     })
     .join('\n');
 
-  const footer = isWon
-    ? `Solved in ${guessCount} ${guessCount === 1 ? 'guess' : 'guesses'} ⚡`
-    : `Ran out of tachyons 🥀`;
+  const outcome = isWon
+    ? `Tachyons synchronized in ${guessCount} ${guessCount === 1 ? 'guess' : 'guesses'}! ⚡`
+    : `Ran out of tachyons! 🥀`;
 
-  return `${header}\n\n${grid}\n\n${footer}\nPlay at: https://flashle-game.vercel.app/`;
+  return `${header}\n\n${grid}\n\n${outcome}\nThink you know The Flash?\nhttps://flashle-game.vercel.app/`;
 }
 
 export async function shareResult(
