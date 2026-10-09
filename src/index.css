@@ -96,7 +96,7 @@
 
 .tile-flip {
   animation: flipTileIn 600ms cubic-bezier(0.25, 1, 0.5, 1) both;
-  transform-style: preserve-3d;
+  backface-visibility: hidden;
 }
 
 /* Sequential column stagger for suspense */

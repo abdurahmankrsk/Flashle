@@ -2,8 +2,6 @@ import React, { useState, useRef, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { CHARACTERS } from '../data/characters';
 import type { FlashCharacter } from '../types/character';
-import { CharacterAvatar } from './CharacterAvatar';
-import { FlashEmblem } from './FlashEmblem';
 
 interface GuessInputProps {
   guessedCharacterIds: string[];
@@ -64,7 +62,6 @@ export const GuessInput: React.FC<GuessInputProps> = ({
     return scored.map((item) => item.character);
   }, [query, guessedCharacterIds]);
 
-
   // Handle keyboard events
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (disabled) return;
@@ -104,9 +101,9 @@ export const GuessInput: React.FC<GuessInputProps> = ({
     : Math.min(guessedCharacterIds.length + 1, maxGuesses);
 
   return (
-    <div className="w-full max-w-2xl mx-auto px-4 my-4 sm:my-6">
+    <div className="w-full max-w-2xl mx-auto px-3 sm:px-4 my-3 sm:my-6">
       {/* Guesses indicator pills */}
-      <div className="flex items-center justify-between mb-2.5 font-tech font-extrabold text-xs sm:text-sm uppercase tracking-wider text-gray-300">
+      <div className="flex items-center justify-between mb-2 sm:mb-2.5 font-tech font-extrabold text-xs sm:text-sm uppercase tracking-wider text-gray-300">
         <span>
           Attempt <span className="text-white text-base sm:text-lg font-black">{currentAttempt}</span> / {maxGuesses}
         </span>
@@ -134,9 +131,9 @@ export const GuessInput: React.FC<GuessInputProps> = ({
       </div>
 
       {/* Input container */}
-      <div className="relative">
+      <div className="relative w-full">
         <div
-          className={`flex items-center bg-[#0d0f17]/95 border-2 rounded-[8px] transition-all duration-150 overflow-hidden shadow-xl ${
+          className={`flex items-center bg-[#0d0f17]/95 border-2 rounded-[8px] transition-all duration-150 shadow-xl min-h-[50px] sm:min-h-[54px] ${
             disabled
               ? 'opacity-50 border-[#232738] cursor-not-allowed'
               : isOpen && filteredCharacters.length > 0
@@ -144,7 +141,7 @@ export const GuessInput: React.FC<GuessInputProps> = ({
               : 'border-[#2a3044] hover:border-[#3e4763] focus-within:border-[#dc2626]'
           }`}
         >
-          <div className="pl-4 pr-2 text-gray-400">
+          <div className="pl-3 sm:pl-4 pr-1.5 sm:pr-2 text-gray-400 shrink-0">
             <Search className="w-5 h-5 text-gray-400" />
           </div>
 
@@ -165,9 +162,9 @@ export const GuessInput: React.FC<GuessInputProps> = ({
             placeholder={
               disabled
                 ? 'Game finished for today!'
-                : 'Search character, alias (e.g. Vibe, Zoom), or actor...'
+                : 'Search character, alias (e.g. Vibe, Zoom)...'
             }
-            className="w-full py-3.5 sm:py-4 px-2.5 bg-transparent text-white placeholder-gray-500 font-body font-semibold text-base sm:text-lg outline-none disabled:cursor-not-allowed"
+            className="w-full py-3 px-2 bg-transparent text-white placeholder-gray-500 font-body font-semibold text-base sm:text-lg outline-none disabled:cursor-not-allowed leading-normal"
             autoComplete="off"
             spellCheck="false"
           />
@@ -181,19 +178,19 @@ export const GuessInput: React.FC<GuessInputProps> = ({
                   submitSelection(filteredCharacters[selectedIndex]);
                 }
               }}
-              className="mr-2 px-4 py-2 bg-[#dc2626] hover:bg-[#ef4444] text-white font-tech font-bold text-xs sm:text-sm uppercase tracking-wider rounded-[6px] flex items-center gap-1.5 transition-transform active:scale-95 shadow-md cursor-pointer"
+              className="mr-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-[#dc2626] hover:bg-[#ef4444] text-white font-tech font-bold text-xs sm:text-sm uppercase tracking-wider rounded-[6px] transition-transform active:scale-95 shadow-md cursor-pointer shrink-0"
             >
               <span>Guess</span>
-              <FlashEmblem size={16} variant="bolt-only" />
             </button>
           )}
         </div>
 
-        {/* Autocomplete Dropdown with character portrait photos */}
+        {/* Autocomplete Dropdown with clear readable layout */}
         {isOpen && filteredCharacters.length > 0 && !disabled && (
           <ul
             ref={listRef}
-            className="absolute left-0 right-0 top-full mt-1.5 bg-[#0e101a] border-2 border-[#2b3046] rounded-[6px] shadow-2xl overflow-hidden z-40 max-h-80 overflow-y-auto custom-scrollbar divide-y divide-[#1b1e2c]"
+            className="absolute left-0 right-0 top-full mt-1.5 bg-[#0e101a] border-2 border-[#2b3046] rounded-[6px] shadow-2xl overflow-hidden z-50 max-h-[60vh] sm:max-h-80 overflow-y-auto custom-scrollbar divide-y divide-[#1b1e2c]"
+            style={{ WebkitOverflowScrolling: 'touch' }}
           >
             {filteredCharacters.map((char, index) => {
               const isSelected = index === selectedIndex;
@@ -202,53 +199,60 @@ export const GuessInput: React.FC<GuessInputProps> = ({
                   key={char.id}
                   onMouseEnter={() => setSelectedIndex(index)}
                   onClick={() => submitSelection(char)}
-                  className={`px-3.5 py-2.5 flex items-center justify-between cursor-pointer transition-colors ${
+                  className={`px-3 py-2.5 sm:py-3 flex items-center justify-between cursor-pointer transition-colors min-h-[50px] ${
                     isSelected
                       ? 'bg-[#1c2032] text-white border-l-4 border-l-[#dc2626]'
                       : 'hover:bg-[#161825] text-gray-300'
                   }`}
                 >
-                  <div className="flex items-center gap-3.5 min-w-0">
-                    {/* Real Character Portrait Photo */}
-                    <CharacterAvatar character={char} size="md" />
+                  <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0 flex-1">
+                    {/* Character Portrait - Large, crisp, and high-definition */}
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-[8px] overflow-hidden border-2 border-[#384364] bg-[#121422] shadow-md relative">
+                      <img
+                        src={`/characters/${char.id}.jpg`}
+                        alt={char.name}
+                        loading="eager"
+                        decoding="sync"
+                        className="w-full h-full object-cover object-[center_20%] select-none"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          target.style.display = 'none';
+                          if (target.nextElementSibling) {
+                            (target.nextElementSibling as HTMLElement).style.display = 'flex';
+                          }
+                        }}
+                      />
+                      <div
+                        style={{ display: 'none' }}
+                        className="w-full h-full items-center justify-center font-bold uppercase text-gray-200 font-tech text-base bg-[#181a28]"
+                      >
+                        {char.name.charAt(0)}
+                      </div>
+                    </div>
 
-
-                    <div className="flex flex-col text-left truncate">
-                      <div className="flex items-center gap-2 truncate">
-                        <span className="font-tech font-bold text-white text-sm sm:text-base tracking-wide truncate">
+                    {/* Character Identity */}
+                    <div className="flex flex-col text-left min-w-0 flex-1">
+                      <div className="flex items-baseline flex-wrap gap-x-1.5 gap-y-0.5 min-w-0">
+                        <span className="font-tech font-bold text-white text-base sm:text-lg tracking-wide break-words">
                           {char.name}
                         </span>
                         {char.aliases.length > 0 && (
-                          <span className="text-xs text-[#fbbf24] font-tech font-semibold truncate">
+                          <span className="text-xs sm:text-sm text-[#fbbf24] font-tech font-semibold">
                             ({char.aliases[0]})
                           </span>
                         )}
                       </div>
-                      <span className="text-[11px] text-gray-400 font-body truncate">
+                      <span className="text-xs text-gray-400 font-body truncate mt-0.5">
                         {char.actor} • Season {char.firstSeason}
                       </span>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-1.5 shrink-0 ml-2">
-                    <span
-                      className={`font-tech text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-[3px] border ${
-                        char.difficulty === 'Easy'
-                          ? 'bg-emerald-950/80 text-emerald-400 border-emerald-500/40'
-                          : char.difficulty === 'Medium'
-                          ? 'bg-amber-950/80 text-amber-400 border-amber-500/40'
-                          : 'bg-red-950/80 text-red-400 border-red-500/40'
-                      }`}
-                    >
-                      {char.difficulty}
-                    </span>
-                    <span className="font-tech text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded-[3px] bg-[#171a28] text-gray-300 border border-[#2b3149]">
-                      {char.species}
-                    </span>
-                    {isSelected && (
-                      <span className="text-[#fbbf24] font-bold text-sm">▶</span>
-                    )}
-                  </div>
+                  {isSelected && (
+                    <div className="shrink-0 ml-3 text-[#fbbf24] font-bold text-base sm:text-lg pr-1">
+                      ▶
+                    </div>
+                  )}
                 </li>
               );
             })}

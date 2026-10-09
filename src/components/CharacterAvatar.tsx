@@ -23,8 +23,14 @@ export const CharacterAvatar: React.FC<CharacterAvatarProps> = ({
   size = 'md',
   className = '',
 }) => {
+  const [prevId, setPrevId] = useState(character.id);
   const [extIndex, setExtIndex] = useState(0);
   const sizeClasses = SIZE_MAP[size];
+
+  if (prevId !== character.id) {
+    setPrevId(character.id);
+    setExtIndex(0);
+  }
 
   if (extIndex < EXTENSIONS.length) {
     return (
@@ -36,9 +42,9 @@ export const CharacterAvatar: React.FC<CharacterAvatarProps> = ({
           src={`/characters/${character.id}${EXTENSIONS[extIndex]}`}
           alt={character.name}
           onError={() => setExtIndex((prev) => prev + 1)}
-          className="w-full h-full object-cover object-center transform-gpu"
-          loading="lazy"
-          decoding="async"
+          className="w-full h-full object-cover object-top select-none"
+          loading="eager"
+          decoding="sync"
         />
       </div>
     );
