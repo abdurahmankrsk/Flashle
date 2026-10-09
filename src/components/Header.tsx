@@ -1,24 +1,34 @@
 import React from 'react';
-import { HelpCircle, BarChart3 } from 'lucide-react';
+import { HelpCircle, BarChart3, Calendar } from 'lucide-react';
 import { FlashEmblem } from './FlashEmblem';
 import { formatDayNumber } from '../game/daily';
 import type { Difficulty } from '../types/character';
 
+export type ActiveGameMode = 'daily' | 'practice' | 'archive';
+
 interface HeaderProps {
   dayNumber: number;
   difficulty: Difficulty;
-  isDaily: boolean;
+  activeMode: ActiveGameMode;
+  streak: number;
+  archiveDateString?: string;
+  practiceDifficulty?: Difficulty | 'All';
   onOpenHowToPlay: () => void;
   onOpenStats: () => void;
-  onToggleMode: (daily: boolean) => void;
+  onOpenArchive: () => void;
+  onToggleMode: (mode: ActiveGameMode) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   dayNumber,
   difficulty,
-  isDaily,
+  activeMode,
+  streak,
+  archiveDateString,
+  practiceDifficulty = 'All',
   onOpenHowToPlay,
   onOpenStats,
+  onOpenArchive,
   onToggleMode,
 }) => {
   const formattedDay = formatDayNumber(dayNumber);
@@ -26,7 +36,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="w-full pt-3 sm:pt-4 pb-2 px-3 sm:px-6 relative z-30 select-none">
       <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 sm:gap-2">
-        {/* Left: Utility & Social Links (Pokedle / LoLdle style) */}
+        {/* Left: Utility, Archive & Social Links */}
         <div className="flex items-center gap-1.5 sm:gap-2 order-2 md:order-1">
           <button
             onClick={onOpenHowToPlay}
@@ -38,11 +48,28 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
           <button
             onClick={onOpenStats}
-            title="Statistics"
-            className="p-2 rounded-lg bg-[#0d101a]/85 border border-white/10 text-gray-300 hover:text-white hover:border-red-500/50 backdrop-blur-md transition-colors shadow-sm cursor-pointer"
+            title={streak > 0 ? `Statistics (${streak} day streak)` : 'Statistics'}
+            className="p-2 rounded-lg bg-[#0d101a]/85 border border-white/10 text-gray-300 hover:text-white hover:border-red-500/50 backdrop-blur-md transition-colors shadow-sm cursor-pointer flex items-center gap-1"
             aria-label="Statistics"
           >
             <BarChart3 className="w-5 h-5" />
+            {streak > 0 && (
+              <span className="font-tech text-xs font-bold text-amber-400 hidden sm:inline">
+                {streak}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={onOpenArchive}
+            title="Past Daily Puzzles Archive"
+            className={`p-2 rounded-lg border backdrop-blur-md transition-colors shadow-sm cursor-pointer flex items-center gap-1 ${
+              activeMode === 'archive'
+                ? 'bg-[#dc2626] border-[#ef4444] text-white'
+                : 'bg-[#0d101a]/85 border-white/10 text-gray-300 hover:text-white hover:border-red-500/50'
+            }`}
+            aria-label="Puzzle Archive"
+          >
+            <Calendar className="w-5 h-5" />
           </button>
 
           <span className="w-px h-5 bg-white/10 mx-0.5 hidden sm:inline-block" />
@@ -71,7 +98,7 @@ export const Header: React.FC<HeaderProps> = ({
             className="p-2 rounded-lg bg-[#0d101a]/85 border border-white/10 text-gray-300 hover:text-[#38bdf8] hover:border-[#38bdf8]/50 backdrop-blur-md transition-colors shadow-sm cursor-pointer"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9h2.79v8.37H6.46v-8.37M7.86 6.54a1.63 1.63 0 1 0 0 3.26 1.63 1.63 0 0 0 0-3.26z" />
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452z" />
             </svg>
           </a>
 
@@ -91,7 +118,7 @@ export const Header: React.FC<HeaderProps> = ({
           </a>
         </div>
 
-        {/* Center: Authentic CW Flash Chest Emblem + Crystal Clear FLASHLE Wordmark */}
+        {/* Center: Flash Logo & Badge */}
         <div className="flex flex-col items-center text-center order-1 md:order-2">
           <div className="flex items-center justify-center gap-2.5 sm:gap-3.5">
             <FlashEmblem size={44} variant="emblem" />
@@ -102,33 +129,65 @@ export const Header: React.FC<HeaderProps> = ({
             />
           </div>
 
-          {/* Subtitle: Day number & Difficulty Badge */}
-          <div className="flex items-center gap-2 mt-1 sm:mt-1.5">
+          {/* Subtitle: Day number, Difficulty Badge & Streak */}
+          <div className="flex items-center gap-2 mt-1 sm:mt-1.5 flex-wrap justify-center">
             <span className="font-tech text-xs sm:text-sm font-bold tracking-wider text-gray-300 uppercase">
-              {isDaily ? `Daily #${formattedDay}` : 'Practice Mode'}
+              {activeMode === 'daily'
+                ? `Daily #${formattedDay}`
+                : activeMode === 'archive'
+                ? `Archive #${formattedDay} (${archiveDateString || ''})`
+                : `Practice`}
             </span>
-            {isDaily && (
+            {activeMode === 'practice' ? (
+              <span
+                className={`font-tech text-[10px] sm:text-xs font-bold uppercase px-2 py-0.5 rounded border tracking-wide ${
+                  practiceDifficulty === 'Easy'
+                    ? 'bg-emerald-950/80 text-emerald-400 border-emerald-500/40'
+                    : practiceDifficulty === 'Medium'
+                    ? 'bg-amber-950/80 text-amber-400 border-amber-500/40'
+                    : practiceDifficulty === 'Hard'
+                    ? 'bg-red-950/80 text-red-400 border-red-500/40'
+                    : practiceDifficulty === 'Very Hard'
+                    ? 'bg-purple-950/80 text-purple-300 border-purple-500/40'
+                    : 'bg-[#181d2e] text-gray-300 border-[#2d3652]'
+                }`}
+              >
+                {practiceDifficulty}
+              </span>
+            ) : (
               <span
                 className={`font-tech text-[10px] sm:text-xs font-bold uppercase px-2 py-0.5 rounded border tracking-wide ${
                   difficulty === 'Easy'
                     ? 'bg-emerald-950/80 text-emerald-400 border-emerald-500/40'
                     : difficulty === 'Medium'
                     ? 'bg-amber-950/80 text-amber-400 border-amber-500/40'
-                    : 'bg-red-950/80 text-red-400 border-red-500/40'
+                    : difficulty === 'Hard'
+                    ? 'bg-red-950/80 text-red-400 border-red-500/40'
+                    : 'bg-purple-950/80 text-purple-300 border-purple-500/40'
                 }`}
               >
                 {difficulty}
               </span>
             )}
+            {/* Streak Badge with Clean Spacing */}
+            <button
+              onClick={onOpenStats}
+              title={`Daily Streak: ${streak} day${streak === 1 ? '' : 's'}. Click to view statistics.`}
+              className="flex items-center gap-1.5 font-tech text-[10px] sm:text-xs font-bold uppercase px-2 py-0.5 rounded border bg-amber-950/70 border-amber-500/40 text-amber-300 hover:bg-amber-900/60 hover:border-amber-400 transition-colors cursor-pointer shadow-sm"
+              aria-label="View streak statistics"
+            >
+              <span className="text-amber-400 text-xs">🔥</span>
+              <span className="tracking-wider">{streak} Streak</span>
+            </button>
           </div>
         </div>
 
         {/* Right: Clean Segmented Mode Selector */}
         <div className="flex items-center bg-[#0d101a]/85 p-1 rounded-lg border border-white/10 backdrop-blur-md shadow-sm order-3">
           <button
-            onClick={() => onToggleMode(true)}
+            onClick={() => onToggleMode('daily')}
             className={`px-3 sm:px-3.5 py-1 rounded-md text-xs sm:text-sm font-semibold transition-all select-none cursor-pointer ${
-              isDaily
+              activeMode === 'daily'
                 ? 'bg-[#dc2626] text-white shadow-sm'
                 : 'text-gray-400 hover:text-gray-200'
             }`}
@@ -136,14 +195,24 @@ export const Header: React.FC<HeaderProps> = ({
             Daily
           </button>
           <button
-            onClick={() => onToggleMode(false)}
+            onClick={() => onToggleMode('practice')}
             className={`px-3 sm:px-3.5 py-1 rounded-md text-xs sm:text-sm font-semibold transition-all select-none cursor-pointer ${
-              !isDaily
+              activeMode === 'practice'
                 ? 'bg-[#dc2626] text-white shadow-sm'
                 : 'text-gray-400 hover:text-gray-200'
             }`}
           >
             Practice
+          </button>
+          <button
+            onClick={onOpenArchive}
+            className={`px-2.5 sm:px-3 py-1 rounded-md text-xs sm:text-sm font-semibold transition-all select-none cursor-pointer ${
+              activeMode === 'archive'
+                ? 'bg-[#ca8a04] text-white shadow-sm'
+                : 'text-gray-400 hover:text-gray-200'
+            }`}
+          >
+            Archive
           </button>
         </div>
       </div>

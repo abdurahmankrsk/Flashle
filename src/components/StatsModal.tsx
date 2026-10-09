@@ -4,11 +4,14 @@ import type { PlayerStats } from '../game/storage';
 import type { GuessComparison } from '../types/character';
 import { FlashEmblem } from './FlashEmblem';
 import { generateShareText, shareResult } from '../game/share';
+import { getActiveStreak } from '../game/storage';
+import { trackShare } from '../utils/analytics';
 
 interface StatsModalProps {
   isOpen: boolean;
   onClose: () => void;
   stats: PlayerStats;
+  todayDateString?: string;
   timeUntilNext: string;
   isGameFinished: boolean;
   dayNumber: number;
@@ -22,6 +25,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
   isOpen,
   onClose,
   stats,
+  todayDateString = '',
   timeUntilNext,
   isGameFinished,
   dayNumber,
@@ -42,11 +46,19 @@ export const StatsModal: React.FC<StatsModalProps> = ({
     ...Object.values(stats.guessDistribution)
   );
 
+  const activeStreak = todayDateString
+    ? getActiveStreak(stats, todayDateString)
+    : stats.currentStreak;
+
   const handleShare = async () => {
     const text = generateShareText(dayNumber, comparisons, isWon);
     const result = await shareResult(text);
+    trackShare('daily', result.method, isWon);
+
     if (result.success) {
       onToast(result.method === 'native' ? 'Result shared!' : 'Copied to clipboard!');
+    } else {
+      onToast('Failed to copy. Please try again.');
     }
   };
 
@@ -56,7 +68,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-white p-1.5 rounded hover:bg-[#1b1f2e] transition-colors"
+          className="absolute top-4 right-4 text-gray-400 hover:text-white p-1.5 rounded hover:bg-[#1b1f2e] transition-colors cursor-pointer"
           aria-label="Close"
         >
           <X className="w-5 h-5" />
@@ -92,7 +104,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
 
           <div className="bg-[#121422] p-2 rounded-[4px] border border-[#23293e]">
             <span className="text-2xl font-bold text-emerald-400 block">
-              {stats.currentStreak}
+              {activeStreak}
             </span>
             <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider flex items-center justify-center gap-0.5">
               <Flame className="w-3 h-3 text-emerald-400" /> Streak
@@ -164,7 +176,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
           {isGameFinished && (
             <button
               onClick={handleShare}
-              className="w-full sm:w-auto py-2.5 px-4 bg-[#dc2626] hover:bg-[#ef4444] text-white text-xs font-bold rounded-[4px] flex items-center justify-center gap-1.5 shadow-md transition-transform active:scale-95 uppercase tracking-wider"
+              className="w-full sm:w-auto py-2.5 px-4 bg-[#dc2626] hover:bg-[#ef4444] text-white text-xs font-bold rounded-[4px] flex items-center justify-center gap-1.5 shadow-md transition-transform active:scale-95 uppercase tracking-wider cursor-pointer"
             >
               <Share2 className="w-3.5 h-3.5" />
               <span>Share</span>

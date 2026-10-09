@@ -16,7 +16,7 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose 
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-white p-1.5 rounded hover:bg-[#1b1f2e] transition-colors"
+          className="absolute top-4 right-4 text-gray-400 hover:text-white p-1.5 rounded hover:bg-[#1b1f2e] transition-colors cursor-pointer"
           aria-label="Close"
         >
           <X className="w-5 h-5" />
@@ -76,29 +76,6 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose 
               </p>
             </div>
           </div>
-
-          <div className="flex items-start gap-3 bg-[#111420] p-2.5 rounded-[6px] border border-[#23293d]">
-            <span className="w-8 h-8 flex items-center justify-center text-[#fde047] font-black shrink-0 mt-0.5 select-none bg-[#ca8a04] border-2 border-[#facc15] rounded-[4px] p-1 shadow-[0_2px_8px_rgba(0,0,0,0.7)]">
-              <svg className="w-5 h-5 fill-current drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]" viewBox="0 0 24 24">
-                <path d="M12 2L4 10h5v12h6V10h5L12 2z" />
-              </svg>
-            </span>
-            <div>
-              <h4 className="font-tech text-xs sm:text-sm font-bold uppercase tracking-wider text-white">Debut Season Arrows (Higher / Lower)</h4>
-              <p className="font-body text-xs text-gray-400 leading-relaxed">
-                <span className="inline-flex items-center gap-1 font-tech font-extrabold text-white bg-[#ca8a04] border border-[#facc15] px-1.5 py-0.5 rounded text-[11px] mr-1 shadow-[0_2px_6px_rgba(0,0,0,0.6)]">
-                  <svg className="w-3.5 h-3.5 fill-current text-[#fde047] drop-shadow-[0_2px_3px_rgba(0,0,0,0.9)]" viewBox="0 0 24 24"><path d="M12 2L4 10h5v12h6V10h5L12 2z" /></svg>
-                  Higher
-                </span>
-                Mystery character debuted in a <strong>later season</strong> (e.g. S4 &gt; S2).<br />
-                <span className="inline-flex items-center gap-1 font-tech font-extrabold text-white bg-[#ca8a04] border border-[#facc15] px-1.5 py-0.5 rounded text-[11px] mr-1 mt-1 shadow-[0_2px_6px_rgba(0,0,0,0.6)]">
-                  <svg className="w-3.5 h-3.5 fill-current text-[#fde047] drop-shadow-[0_2px_3px_rgba(0,0,0,0.9)]" viewBox="0 0 24 24"><path d="M12 22l8-8h-5V2h-6v12H4l8 8z" /></svg>
-                  Lower
-                </span>
-                Mystery character debuted in an <strong>earlier season</strong> (e.g. S1 &lt; S3).
-              </p>
-            </div>
-          </div>
         </div>
 
         {/* Quick Example */}
@@ -117,7 +94,7 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose 
             </div>
             <div className="p-1.5 rounded-[4px] bg-[#ca8a04] border-2 border-[#facc15] text-white shadow-[0_2px_6px_rgba(0,0,0,0.6)] flex items-center justify-center gap-1">
               <span>S2</span>
-              <svg className="w-3.5 h-3.5 fill-current text-[#fde047] drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]" viewBox="0 0 24 24"><path d="M12 22l8-8h-5V2h-6v12H4l8 8z" /></svg>
+              <span className="drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">🟨</span>
             </div>
             <div className="p-1.5 rounded-[4px] bg-[#991b1b] border-2 border-[#ef4444] text-white shadow-[0_2px_6px_rgba(0,0,0,0.6)] flex items-center justify-center gap-1">
               <span>Villain</span>
@@ -125,13 +102,13 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose 
             </div>
           </div>
           <p className="font-body text-[11px] text-gray-400 mt-2">
-            In this example, the secret character is a male with Super Speed who debuted in Season 1 and is not a villain!
+            In this example, the secret character is a male with Super Speed who debuted near Season 2 and is not a villain!
           </p>
         </div>
 
         <button
           onClick={onClose}
-          className="w-full py-2.5 bg-[#dc2626] hover:bg-[#ef4444] text-white font-tech font-bold rounded-[4px] transition-transform active:scale-95 uppercase tracking-wider text-sm shadow-md"
+          className="w-full py-2.5 bg-[#dc2626] hover:bg-[#ef4444] text-white font-tech font-bold rounded-[4px] transition-transform active:scale-95 uppercase tracking-wider text-sm shadow-md cursor-pointer"
         >
           Got it, let's play!
         </button>
