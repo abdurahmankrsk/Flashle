@@ -43,8 +43,8 @@ export const CharacterAvatar: React.FC<CharacterAvatarProps> = ({
           alt={character.name}
           onError={() => setExtIndex((prev) => prev + 1)}
           className="w-full h-full object-cover object-top select-none"
-          loading="eager"
-          decoding="sync"
+          loading="lazy"
+          decoding="async"
         />
       </div>
     );

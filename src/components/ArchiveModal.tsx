@@ -4,6 +4,7 @@ import { FlashEmblem } from './FlashEmblem';
 import { getHistoricalPuzzles, formatDayNumber } from '../game/daily';
 import { getAllStoredGameStates } from '../game/storage';
 import type { HistoricalPuzzleInfo } from '../game/daily';
+import { useModalAccessibility } from '../utils/useModalAccessibility';
 
 interface ArchiveModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ export const ArchiveModal: React.FC<ArchiveModalProps> = ({
   onSelectPuzzle,
   activeDateString,
 }) => {
+  const modalRef = useModalAccessibility(isOpen, onClose);
   const puzzles = useMemo(() => getHistoricalPuzzles(), []);
   const storedStates = useMemo(() => {
     if (!isOpen) return {};
@@ -28,12 +30,19 @@ export const ArchiveModal: React.FC<ArchiveModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-lg bg-[#0d0f18] border-2 border-[#2c3349] rounded-[8px] p-5 sm:p-6 shadow-2xl text-white overflow-hidden max-h-[90vh] flex flex-col">
-        {/* Close Button */}
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="archive-modal-title"
+        tabIndex={-1}
+        className="relative w-full max-w-lg bg-[#0d0f18] border-2 border-[#2c3349] rounded-[8px] p-5 sm:p-6 shadow-2xl text-white overflow-hidden max-h-[90vh] flex flex-col focus:outline-none"
+      >
+        {/* Close Button with >= 44x44px touch target */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-white p-1.5 rounded hover:bg-[#1b1f2e] transition-colors cursor-pointer"
-          aria-label="Close"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 text-gray-400 hover:text-white min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-[#1b1f2e] transition-colors cursor-pointer"
+          aria-label="Close dialog"
         >
           <X className="w-5 h-5" />
         </button>
@@ -41,8 +50,8 @@ export const ArchiveModal: React.FC<ArchiveModalProps> = ({
         {/* Modal Header */}
         <div className="flex items-center gap-2.5 mb-2 shrink-0">
           <FlashEmblem size={26} variant="emblem" />
-          <h2 className="font-heading text-2xl sm:text-3xl uppercase italic tracking-wider">
-            Puzzle <span className="text-[#dc2626]">Archive</span>
+          <h2 id="archive-modal-title" className="font-heading text-2xl sm:text-3xl uppercase italic tracking-wider">
+            Puzzle <span className="text-[#ef4444]">Archive</span>
           </h2>
         </div>
 

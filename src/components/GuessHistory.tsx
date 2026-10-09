@@ -52,24 +52,28 @@ export const GuessHistory: React.FC<GuessHistoryProps> = ({
     <div className="w-full max-w-5xl md:max-w-6xl mx-auto px-1 sm:px-4 my-3 sm:my-4">
       {/* Scroll container on phone, fits naturally on desktop */}
       <div className="w-full overflow-x-auto pb-3 custom-scrollbar">
-        <div className="min-w-[640px] md:min-w-0 w-full">
+        <div
+          role="table"
+          aria-label="Guess comparison history"
+          className="min-w-[640px] md:min-w-0 w-full"
+        >
           {/* Table Column Headers Bar — Clear, large, crisp font */}
-          <div className="w-full mb-2 select-none">
-            <div className="grid grid-cols-8 gap-1.5 sm:gap-2.5 text-center text-[11px] sm:text-sm md:text-base font-tech font-extrabold tracking-wider uppercase text-zinc-100">
-              <div>CHARACTER</div>
-              <div>GENDER</div>
-              <div>SPECIES</div>
-              <div>POWERS</div>
-              <div>ALIGNMENT</div>
-              <div>DEBUT</div>
-              <div>ORIGIN</div>
-              <div>AFFILIATION</div>
+          <div role="rowgroup" className="w-full mb-2 select-none">
+            <div role="row" className="grid grid-cols-8 gap-1.5 sm:gap-2.5 text-center text-[11px] sm:text-sm md:text-base font-tech font-extrabold tracking-wider uppercase text-zinc-100">
+              <div role="columnheader">CHARACTER</div>
+              <div role="columnheader">GENDER</div>
+              <div role="columnheader">SPECIES</div>
+              <div role="columnheader">POWERS</div>
+              <div role="columnheader">ALIGNMENT</div>
+              <div role="columnheader">DEBUT</div>
+              <div role="columnheader">ORIGIN</div>
+              <div role="columnheader">AFFILIATION</div>
             </div>
             <hr className="border-t-2 border-white/20 mt-1.5 mb-2.5" />
           </div>
 
           {/* Grid of Guess Rows — Exactly 8 squares per row, scaled up and clear */}
-          <div className="space-y-2 sm:space-y-3">
+          <div role="rowgroup" className="space-y-2 sm:space-y-3">
             {reversedGuesses.map((guess, index) => {
               const isNew = guess.character.id === newestGuessId;
               const nameLen = guess.character.name.length;
@@ -82,11 +86,14 @@ export const GuessHistory: React.FC<GuessHistoryProps> = ({
 
               return (
                 <div
+                  role="row"
+                  aria-label={`Guess ${comparisons.length - index}: ${guess.character.name}`}
                   key={`${guess.character.id}-${comparisons.length - index}`}
                   className="grid grid-cols-8 gap-1.5 sm:gap-2.5 items-center w-full"
                 >
                   {/* Column 1: Character Portrait Square — 100% contained flex-col, impossible to overflow */}
                   <div
+                    role="cell"
                     className={`aspect-square w-full rounded-[6px] border-2 border-[#2d3247] bg-[#121420] flex flex-col overflow-hidden shadow-lg select-none game-tile ${
                       isNew ? 'tile-flip tile-delay-0' : ''
                     }`}
@@ -95,8 +102,8 @@ export const GuessHistory: React.FC<GuessHistoryProps> = ({
                       <img
                         src={`/characters/${guess.character.id}.jpg`}
                         alt={guess.character.name}
-                        loading="eager"
-                        decoding="sync"
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover object-[center_20%] select-none"
                         onError={(e) => {
                           const target = e.currentTarget;
@@ -123,6 +130,7 @@ export const GuessHistory: React.FC<GuessHistoryProps> = ({
 
                   {/* Column 2: Gender */}
                   <AttributeTile
+                    label="Gender"
                     comparison={guess.gender}
                     delayIndex={1}
                     isNew={isNew}
@@ -130,6 +138,7 @@ export const GuessHistory: React.FC<GuessHistoryProps> = ({
 
                   {/* Column 3: Species */}
                   <AttributeTile
+                    label="Species"
                     comparison={guess.species}
                     delayIndex={2}
                     isNew={isNew}
@@ -137,6 +146,7 @@ export const GuessHistory: React.FC<GuessHistoryProps> = ({
 
                   {/* Column 4: Powers */}
                   <AttributeTile
+                    label="Powers"
                     comparison={guess.power}
                     delayIndex={3}
                     isNew={isNew}
@@ -144,6 +154,7 @@ export const GuessHistory: React.FC<GuessHistoryProps> = ({
 
                   {/* Column 5: Alignment */}
                   <AttributeTile
+                    label="Alignment"
                     comparison={guess.alignment}
                     delayIndex={4}
                     isNew={isNew}
@@ -151,6 +162,7 @@ export const GuessHistory: React.FC<GuessHistoryProps> = ({
 
                   {/* Column 6: Debut Season */}
                   <AttributeTile
+                    label="Debut Season"
                     comparison={guess.firstSeason}
                     delayIndex={5}
                     isNew={isNew}
@@ -158,6 +170,7 @@ export const GuessHistory: React.FC<GuessHistoryProps> = ({
 
                   {/* Column 7: Origin Earth */}
                   <AttributeTile
+                    label="Origin Earth"
                     comparison={guess.earth}
                     delayIndex={6}
                     isNew={isNew}
@@ -165,6 +178,7 @@ export const GuessHistory: React.FC<GuessHistoryProps> = ({
 
                   {/* Column 8: Affiliation */}
                   <AttributeTile
+                    label="Affiliation"
                     comparison={guess.teams}
                     delayIndex={7}
                     isNew={isNew}

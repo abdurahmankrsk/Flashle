@@ -1,6 +1,7 @@
 import React from 'react';
 import { X } from 'lucide-react';
 import { FlashEmblem } from './FlashEmblem';
+import { useModalAccessibility } from '../utils/useModalAccessibility';
 
 interface HowToPlayModalProps {
   isOpen: boolean;
@@ -8,16 +9,25 @@ interface HowToPlayModalProps {
 }
 
 export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose }) => {
+  const modalRef = useModalAccessibility(isOpen, onClose);
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-lg bg-[#0d0f18] border-2 border-[#2c3349] rounded-[8px] p-5 sm:p-7 shadow-2xl text-white overflow-hidden max-h-[92vh] overflow-y-auto custom-scrollbar">
-        {/* Close Button */}
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="how-to-play-title"
+        tabIndex={-1}
+        className="relative w-full max-w-lg bg-[#0d0f18] border-2 border-[#2c3349] rounded-[8px] p-5 sm:p-7 shadow-2xl text-white overflow-hidden max-h-[92vh] overflow-y-auto custom-scrollbar focus:outline-none"
+      >
+        {/* Close Button with >= 44x44px touch target */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-white p-1.5 rounded hover:bg-[#1b1f2e] transition-colors cursor-pointer"
-          aria-label="Close"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 text-gray-400 hover:text-white min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-[#1b1f2e] transition-colors cursor-pointer"
+          aria-label="Close dialog"
         >
           <X className="w-5 h-5" />
         </button>
@@ -25,8 +35,8 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose 
         {/* Title */}
         <div className="flex items-center gap-2.5 mb-3">
           <FlashEmblem size={28} variant="emblem" />
-          <h2 className="font-heading text-2xl sm:text-3xl uppercase italic tracking-wider">
-            How to Play <span className="text-[#dc2626]">Flashle</span>
+          <h2 id="how-to-play-title" className="font-heading text-2xl sm:text-3xl uppercase italic tracking-wider">
+            How to Play <span className="text-[#ef4444]">Flashle</span>
           </h2>
         </div>
 
@@ -54,7 +64,7 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose 
           </div>
 
           <div className="flex items-start gap-3 bg-[#111420] p-2.5 rounded-[6px] border border-[#23293d]">
-            <span className="w-8 h-8 rounded-[4px] bg-[#ca8a04] border-2 border-[#facc15] flex items-center justify-center text-sm font-bold shrink-0 mt-0.5 shadow-[0_2px_8px_rgba(0,0,0,0.7)] text-white">
+            <span className="w-8 h-8 rounded-[4px] bg-[#eab308] border-2 border-[#fde047] flex items-center justify-center text-sm font-bold shrink-0 mt-0.5 shadow-[0_2px_8px_rgba(0,0,0,0.7)] text-zinc-950 font-black">
               <span className="drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">🟨</span>
             </span>
             <div>

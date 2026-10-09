@@ -147,6 +147,17 @@ export const GuessInput: React.FC<GuessInputProps> = ({
 
           <input
             ref={inputRef}
+            id="character-search-input"
+            role="combobox"
+            aria-label="Search character by name, alias, or actor"
+            aria-autocomplete="list"
+            aria-expanded={isOpen && filteredCharacters.length > 0 && !disabled}
+            aria-controls="character-suggestions-list"
+            aria-activedescendant={
+              isOpen && filteredCharacters[selectedIndex]
+                ? `character-option-${filteredCharacters[selectedIndex].id}`
+                : undefined
+            }
             type="text"
             value={query}
             disabled={disabled}
@@ -178,7 +189,7 @@ export const GuessInput: React.FC<GuessInputProps> = ({
                   submitSelection(filteredCharacters[selectedIndex]);
                 }
               }}
-              className="mr-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-[#dc2626] hover:bg-[#ef4444] text-white font-tech font-bold text-xs sm:text-sm uppercase tracking-wider rounded-[6px] transition-transform active:scale-95 shadow-md cursor-pointer shrink-0"
+              className="mr-2 px-3 sm:px-4 py-2 min-h-[44px] min-w-[64px] bg-[#dc2626] hover:bg-[#ef4444] text-white font-tech font-bold text-xs sm:text-sm uppercase tracking-wider rounded-[6px] transition-transform active:scale-95 shadow-md cursor-pointer shrink-0 flex items-center justify-center"
             >
               <span>Guess</span>
             </button>
@@ -189,6 +200,9 @@ export const GuessInput: React.FC<GuessInputProps> = ({
         {isOpen && filteredCharacters.length > 0 && !disabled && (
           <ul
             ref={listRef}
+            id="character-suggestions-list"
+            role="listbox"
+            aria-label="Character suggestions"
             className="absolute left-0 right-0 top-full mt-1.5 bg-[#0e101a] border-2 border-[#2b3046] rounded-[6px] shadow-2xl overflow-hidden z-50 max-h-[60vh] sm:max-h-80 overflow-y-auto custom-scrollbar divide-y divide-[#1b1e2c]"
             style={{ WebkitOverflowScrolling: 'touch' }}
           >
@@ -197,11 +211,14 @@ export const GuessInput: React.FC<GuessInputProps> = ({
               return (
                 <li
                   key={char.id}
+                  id={`character-option-${char.id}`}
+                  role="option"
+                  aria-selected={isSelected}
                   onMouseEnter={() => setSelectedIndex(index)}
                   onClick={() => submitSelection(char)}
                   className={`px-3 py-2.5 sm:py-3 flex items-center justify-between cursor-pointer transition-colors min-h-[50px] ${
                     isSelected
-                      ? 'bg-[#1c2032] text-white border-l-4 border-l-[#dc2626]'
+                      ? 'bg-[#1e2338] text-white ring-1 ring-inset ring-[#ef4444]/40'
                       : 'hover:bg-[#161825] text-gray-300'
                   }`}
                 >
@@ -211,8 +228,8 @@ export const GuessInput: React.FC<GuessInputProps> = ({
                       <img
                         src={`/characters/${char.id}.jpg`}
                         alt={char.name}
-                        loading="eager"
-                        decoding="sync"
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover object-[center_20%] select-none"
                         onError={(e) => {
                           const target = e.currentTarget;

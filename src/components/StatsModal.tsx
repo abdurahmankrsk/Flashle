@@ -6,6 +6,7 @@ import { FlashEmblem } from './FlashEmblem';
 import { generateShareText, shareResult } from '../game/share';
 import { getActiveStreak } from '../game/storage';
 import { trackShare } from '../utils/analytics';
+import { useModalAccessibility } from '../utils/useModalAccessibility';
 
 interface StatsModalProps {
   isOpen: boolean;
@@ -34,6 +35,8 @@ export const StatsModal: React.FC<StatsModalProps> = ({
   onToast,
   onResetDaily,
 }) => {
+  const modalRef = useModalAccessibility(isOpen, onClose);
+
   if (!isOpen) return null;
 
   const winPercentage =
@@ -64,12 +67,19 @@ export const StatsModal: React.FC<StatsModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-md bg-[#0d0f18] border-2 border-[#2c3349] rounded-[8px] p-5 sm:p-7 shadow-2xl text-white overflow-hidden max-h-[92vh] overflow-y-auto custom-scrollbar">
-        {/* Close Button */}
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="stats-modal-title"
+        tabIndex={-1}
+        className="relative w-full max-w-md bg-[#0d0f18] border-2 border-[#2c3349] rounded-[8px] p-5 sm:p-7 shadow-2xl text-white overflow-hidden max-h-[92vh] overflow-y-auto custom-scrollbar focus:outline-none"
+      >
+        {/* Close Button with >= 44x44px touch target */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-white p-1.5 rounded hover:bg-[#1b1f2e] transition-colors cursor-pointer"
-          aria-label="Close"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 text-gray-400 hover:text-white min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-[#1b1f2e] transition-colors cursor-pointer"
+          aria-label="Close dialog"
         >
           <X className="w-5 h-5" />
         </button>
@@ -77,7 +87,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
         {/* Title */}
         <div className="flex items-center gap-2.5 mb-4">
           <FlashEmblem size={24} variant="emblem" />
-          <h2 className="font-heading text-2xl uppercase italic tracking-wider">
+          <h2 id="stats-modal-title" className="font-heading text-2xl uppercase italic tracking-wider">
             Your Statistics
           </h2>
         </div>
@@ -112,11 +122,11 @@ export const StatsModal: React.FC<StatsModalProps> = ({
           </div>
 
           <div className="bg-[#121422] p-2 rounded-[4px] border border-[#23293e]">
-            <span className="text-2xl font-bold text-[#dc2626] block">
+            <span className="text-2xl font-bold text-rose-400 block">
               {stats.maxStreak}
             </span>
             <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider flex items-center justify-center gap-0.5">
-              <Trophy className="w-3 h-3 text-[#dc2626]" /> Best
+              <Trophy className="w-3 h-3 text-rose-400" /> Best
             </span>
           </div>
         </div>

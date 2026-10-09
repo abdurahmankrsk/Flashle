@@ -103,6 +103,7 @@ export const App: React.FC = () => {
   const [showEndGame, setShowEndGame] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [newestGuessId, setNewestGuessId] = useState<string | undefined>(undefined);
+  const [screenReaderAnnouncement, setScreenReaderAnnouncement] = useState<string>('');
 
   // Midnight countdown timer
   const [timeUntilNext, setTimeUntilNext] = useState<string>(
@@ -300,6 +301,21 @@ export const App: React.FC = () => {
 
       setNewestGuessId(character.id);
 
+      // Accessible live announcement for assistive technologies
+      if (isWon) {
+        setScreenReaderAnnouncement(
+          `Congratulations! You guessed ${character.name} and solved the mystery in ${nextGuesses.length} attempts!`
+        );
+      } else if (isLost) {
+        setScreenReaderAnnouncement(
+          `Game over. You ran out of attempts. The secret character was ${currentSecret.name}.`
+        );
+      } else {
+        setScreenReaderAnnouncement(
+          `Guessed ${character.name}. ${MAX_GUESSES - nextGuesses.length} attempts remaining.`
+        );
+      }
+
       if (activeMode === 'daily') {
         const nextState: DailyGameState = {
           ...dailyState,
@@ -367,6 +383,16 @@ export const App: React.FC = () => {
       {/* Toast Notification */}
       <Toast message={toastMessage} onClose={handleCloseToast} />
 
+      {/* Accessible Live Region for Assistive Technologies */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {screenReaderAnnouncement}
+      </div>
+
       {/* Main Header */}
       <Header
         dayNumber={currentDayNumber || dayNumber}
@@ -396,7 +422,7 @@ export const App: React.FC = () => {
                   <button
                     key={diff}
                     onClick={() => handleSelectPracticeDifficulty(diff)}
-                    className={`px-2.5 py-1 rounded text-xs font-tech font-bold uppercase transition-all cursor-pointer ${
+                    className={`min-h-[38px] px-3 py-1.5 rounded text-xs font-tech font-bold uppercase transition-all cursor-pointer flex items-center justify-center ${
                       practiceDifficulty === diff
                         ? diff === 'Easy'
                           ? 'bg-emerald-600 text-white shadow-sm ring-1 ring-emerald-400'
@@ -417,7 +443,7 @@ export const App: React.FC = () => {
 
               <button
                 onClick={handleNewPracticeGame}
-                className="flex items-center gap-1 text-xs font-tech font-bold text-gray-200 hover:text-white uppercase bg-[#1f2438] hover:bg-[#2b334f] px-3 py-1.5 rounded border border-[#333b56] transition-colors cursor-pointer shrink-0"
+                className="flex items-center gap-1 text-xs font-tech font-bold text-gray-200 hover:text-white uppercase bg-[#1f2438] hover:bg-[#2b334f] px-3 py-2 min-h-[38px] rounded border border-[#333b56] transition-colors cursor-pointer shrink-0"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
                 <span>Next</span>
@@ -459,7 +485,7 @@ export const App: React.FC = () => {
 
               <button
                 onClick={handleReturnToToday}
-                className="px-3 py-1.5 bg-[#dc2626] hover:bg-[#ef4444] text-white text-xs font-tech font-bold uppercase tracking-wider rounded transition-colors shadow-md cursor-pointer shrink-0"
+                className="px-3 py-2 min-h-[38px] bg-[#dc2626] hover:bg-[#ef4444] text-white text-xs font-tech font-bold uppercase tracking-wider rounded transition-colors shadow-md cursor-pointer shrink-0 flex items-center justify-center"
               >
                 Today's Daily →
               </button>
@@ -470,9 +496,11 @@ export const App: React.FC = () => {
         {/* Banner if game finished */}
         {currentStatus !== 'playing' && (
           <div className="w-full max-w-2xl px-2 my-2">
-            <div
+            <button
+              type="button"
               onClick={() => setShowEndGame(true)}
-              className="cursor-pointer bg-[#0e1019]/90 border-2 border-[#2b3147] hover:border-[#dc2626] rounded-[8px] p-3 flex items-center justify-between font-tech transition-all shadow-lg group backdrop-blur-sm"
+              className="w-full cursor-pointer bg-[#0e1019]/90 border-2 border-[#2b3147] hover:border-[#dc2626] focus:border-[#dc2626] focus:outline-none focus:ring-2 focus:ring-[#dc2626]/50 rounded-[8px] p-3 flex items-center justify-between font-tech transition-all shadow-lg group backdrop-blur-sm text-left"
+              aria-label="View character dossier and share result"
             >
               <div className="flex items-center gap-2.5">
                 {currentStatus === 'won' ? (
@@ -491,7 +519,7 @@ export const App: React.FC = () => {
               <span className="text-[#fbbf24] font-bold text-xs uppercase tracking-wider group-hover:underline flex items-center gap-1">
                 View Dossier & Share →
               </span>
-            </div>
+            </button>
           </div>
         )}
 

@@ -46,6 +46,7 @@ export const FlashEmblem: React.FC<FlashEmblemProps> = ({
     <img
       src="/flash-emblem.png"
       alt="The Flash Emblem"
+      decoding="async"
       style={{ height: size, width: 'auto' }}
       className={`inline-block object-contain drop-shadow-[0_2px_12px_rgba(234,179,8,0.45)] select-none ${className}`}
     />

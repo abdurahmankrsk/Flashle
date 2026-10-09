@@ -6,6 +6,7 @@ import { CharacterAvatar } from './CharacterAvatar';
 import { FlashEmblem } from './FlashEmblem';
 import { generateShareText, shareResult } from '../game/share';
 import { trackShare } from '../utils/analytics';
+import { useModalAccessibility } from '../utils/useModalAccessibility';
 
 interface EndGameModalProps {
   isOpen: boolean;
@@ -34,6 +35,8 @@ export const EndGameModal: React.FC<EndGameModalProps> = ({
   onNewPracticeGame,
   onToast,
 }) => {
+  const modalRef = useModalAccessibility(isOpen, onClose);
+
   useEffect(() => {
     if (isOpen && isWon) {
       try {
@@ -72,12 +75,19 @@ export const EndGameModal: React.FC<EndGameModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-lg bg-[#0d0f18] border-2 border-[#2c3349] rounded-[8px] p-4 sm:p-6 shadow-2xl text-white overflow-x-hidden max-h-[92vh] overflow-y-auto custom-scrollbar">
-        {/* Close Button */}
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="endgame-modal-title"
+        tabIndex={-1}
+        className="relative w-full max-w-lg bg-[#0d0f18] border-2 border-[#2c3349] rounded-[8px] p-4 sm:p-6 shadow-2xl text-white overflow-x-hidden max-h-[92vh] overflow-y-auto custom-scrollbar focus:outline-none"
+      >
+        {/* Close Button with >= 44x44px touch target */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 sm:top-4 sm:right-4 text-gray-400 hover:text-white p-1.5 rounded hover:bg-[#1b1f2e] transition-colors cursor-pointer z-10"
-          aria-label="Close"
+          className="absolute top-2 right-2 sm:top-3 sm:right-3 text-gray-400 hover:text-white min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-[#1b1f2e] transition-colors cursor-pointer z-10"
+          aria-label="Close dialog"
         >
           <X className="w-5 h-5" />
         </button>
@@ -93,7 +103,7 @@ export const EndGameModal: React.FC<EndGameModalProps> = ({
               </div>
             )}
           </div>
-          <h2 className="font-heading text-2xl sm:text-4xl tracking-wider uppercase italic">
+          <h2 id="endgame-modal-title" className="font-heading text-2xl sm:text-4xl tracking-wider uppercase italic">
             {isWon ? (
               <span className="text-white">
                 YOU <span className="text-[#fbbf24]">GOT IT!</span>
@@ -150,7 +160,7 @@ export const EndGameModal: React.FC<EndGameModalProps> = ({
 
           {/* Quote */}
           {secret.quote && (
-            <div className="font-body italic text-xs sm:text-sm text-gray-200 bg-[#090b12] p-2.5 sm:p-3 rounded-[4px] border-l-2 border-[#dc2626] mb-3 break-words">
+            <div className="font-body italic text-xs sm:text-sm text-gray-200 bg-[#090b12] p-2.5 sm:p-3 rounded-md border border-[#283048] mb-3 break-words shadow-sm">
               "{secret.quote}"
             </div>
           )}

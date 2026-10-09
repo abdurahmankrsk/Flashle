@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useModalAccessibility } from '../utils/useModalAccessibility';
 
 export const Footer: React.FC = () => {
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const modalRef = useModalAccessibility(showPrivacyModal, () => setShowPrivacyModal(false));
 
   return (
     <>
@@ -65,14 +67,19 @@ export const Footer: React.FC = () => {
 
       {showPrivacyModal && (
         <div
-          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in"
           onClick={() => setShowPrivacyModal(false)}
         >
           <div
-            className="bg-[#0e111b] border-2 border-[#262c3e] rounded-lg max-w-md w-full p-6 shadow-2xl text-left"
+            ref={modalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="privacy-modal-title"
+            tabIndex={-1}
+            className="bg-[#0e111b] border-2 border-[#262c3e] rounded-lg max-w-md w-full p-6 shadow-2xl text-left focus:outline-none"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="font-tech text-lg font-bold text-white mb-2">Privacy Policy</h3>
+            <h3 id="privacy-modal-title" className="font-tech text-lg font-bold text-white mb-2">Privacy Policy</h3>
             <p className="text-xs text-gray-300 leading-relaxed mb-4">
               Flashle is an unofficial fan-made daily guessing game. We do not collect, track, or share any personal information. All game progress, daily streaks, and statistics are stored exclusively in your browser’s local storage.
             </p>
@@ -81,7 +88,7 @@ export const Footer: React.FC = () => {
             </p>
             <button
               onClick={() => setShowPrivacyModal(false)}
-              className="w-full py-2 bg-[#dc2626] hover:bg-[#ef4444] text-white font-tech font-bold text-xs uppercase rounded transition-colors"
+              className="w-full py-2.5 bg-[#dc2626] hover:bg-[#ef4444] text-white font-tech font-bold text-xs uppercase rounded transition-colors min-h-[44px] flex items-center justify-center cursor-pointer"
             >
               Close
             </button>
