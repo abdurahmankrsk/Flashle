@@ -21,7 +21,7 @@ export type EarthOrigin =
   | 'Earth-221'
   | 'Multiverse / Other';
 
-export type Difficulty = 'Easy' | 'Medium' | 'Hard';
+export type Difficulty = 'Easy' | 'Medium' | 'Hard' | 'Very Hard';
 
 export interface FlashCharacter {
   id: string;

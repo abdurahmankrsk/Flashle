@@ -73,14 +73,15 @@ export function getDayNumber(date: Date = new Date()): number {
 }
 
 export function getDailyDifficulty(dayNumber: number): Difficulty {
-  // Deterministic daily difficulty: 40% Easy, 30% Medium, 30% Hard
+  // Deterministic daily difficulty: 40% Easy, 27.5% Medium, 27.5% Hard, 5% Very Hard
   const a = 1103515245;
   const c = 12345;
   const seed = (dayNumber * a + c) >>> 0;
-  const roll = seed % 100;
-  if (roll < 40) return 'Easy';    // 0..39 (40%)
-  if (roll < 70) return 'Medium';  // 40..69 (30%)
-  return 'Hard';                   // 70..99 (30%)
+  const roll = seed % 1000;
+  if (roll < 400) return 'Easy';       // 0..399 (40%)
+  if (roll < 675) return 'Medium';     // 400..674 (27.5%)
+  if (roll < 950) return 'Hard';       // 675..949 (27.5%)
+  return 'Very Hard';                  // 950..999 (5%)
 }
 
 export function getDailyCharacter(date: Date = new Date()): {
@@ -97,6 +98,57 @@ export function getDailyCharacter(date: Date = new Date()): {
   const index = getDailyIndex(dayNumber, activePool.length);
   const character = activePool[index];
   return { character, dayNumber, dateString, difficulty };
+}
+
+export function getDailyCharacterForDate(dateString: string): {
+  character: FlashCharacter;
+  dayNumber: number;
+  dateString: string;
+  difficulty: Difficulty;
+} {
+  const d = new Date(`${dateString}T12:00:00Z`);
+  return getDailyCharacter(d);
+}
+
+export interface HistoricalPuzzleInfo {
+  dayNumber: number;
+  dateString: string;
+  difficulty: Difficulty;
+  formattedDate: string;
+  isToday: boolean;
+}
+
+export function getHistoricalPuzzles(currentDate: Date = new Date()): HistoricalPuzzleInfo[] {
+  const todayStr = getTodayDateString(currentDate);
+  const totalDays = getDayNumber(currentDate);
+  const list: HistoricalPuzzleInfo[] = [];
+
+  const anchorTime = new Date(`${ANCHOR_DATE_STRING}T12:00:00Z`).getTime();
+
+  for (let day = totalDays; day >= 1; day--) {
+    const timeForDay = anchorTime + (day - 1) * 24 * 60 * 60 * 1000;
+    const dateObj = new Date(timeForDay);
+    const dateStr = getTodayDateString(dateObj);
+    const diff = getDailyDifficulty(day);
+
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: SARAJEVO_TZ,
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+    const formattedDate = formatter.format(dateObj);
+
+    list.push({
+      dayNumber: day,
+      dateString: dateStr,
+      difficulty: diff,
+      formattedDate,
+      isToday: dateStr === todayStr,
+    });
+  }
+
+  return list;
 }
 
 export function getTimeUntilNextMidnight(now: Date = new Date()): {
