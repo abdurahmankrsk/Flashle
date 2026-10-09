@@ -243,7 +243,7 @@ export const GuessInput: React.FC<GuessInputProps> = ({
                         )}
                       </div>
                       <span className="text-xs text-gray-400 font-body truncate mt-0.5">
-                        {char.actor} • Season {char.firstSeason}
+                        {char.actor}
                       </span>
                     </div>
                   </div>
