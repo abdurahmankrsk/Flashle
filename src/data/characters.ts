@@ -177,7 +177,7 @@ export const CHARACTERS: FlashCharacter[] = [
     firstSeason: 2,
     seasons: [2, 5, 9],
     earth: "Earth-2",
-    teams: ["Rogues"],
+    teams: ["Zoom's Meta Army"],
     quote: "You can't lock up the darkness.",
     role: "Earth-2 Speed Monster / Serial Killer",
     difficulty: "Easy",

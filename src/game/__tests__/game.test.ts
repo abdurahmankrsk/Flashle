@@ -158,6 +158,8 @@ describe('Attribute Comparator', () => {
     expect(result.alignment.status).toBe('incorrect');
     expect(result.speedster.status).toBe('correct');
     expect(result.earth.status).toBe('incorrect');
+    expect(zoom.teams).toContain("Zoom's Meta Army");
+    expect(zoom.teams).not.toContain("Rogues");
   });
 
   it('correctly compares Barry with Iris (Non-speedster human)', () => {
