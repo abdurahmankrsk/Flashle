@@ -20,6 +20,7 @@ import {
   trackPuzzleComplete,
   trackShare,
 } from '../../utils/analytics';
+import { searchCharacters } from '../../utils/search';
 
 // Setup in-memory localStorage polyfill for Node test environment
 class LocalStorageMock {
@@ -386,4 +387,53 @@ describe('Share Results Formatter', () => {
     const resultStats = recordGameResult(true, 3, '2026-10-09');
     expect(resultStats.currentStreak).toBe(2);
   });
+
+  describe('Kristen Kramer Character Specification', () => {
+    it('includes Kristen Kramer with Hard difficulty and accurate metahuman traits', () => {
+      const kramer = CHARACTERS.find((c) => c.id === 'kristen-kramer');
+      expect(kramer).toBeDefined();
+      expect(kramer?.name).toBe('Kristen Kramer');
+      expect(kramer?.difficulty).toBe('Hard');
+      expect(kramer?.power).toBe('Power Mimicry');
+      expect(kramer?.species).toBe('Metahuman');
+      expect(kramer?.alignment).toBe('Hero');
+      expect(kramer?.speedster).toBe(false);
+      expect(kramer?.firstSeason).toBe(7);
+      expect(kramer?.seasons).toEqual([7, 8, 9]);
+      expect(kramer?.teams).toContain('CCPD');
+      expect(kramer?.actor).toBe('Carmen Moore');
+    });
+  });
+
+  describe('Search Matching & Ranking', () => {
+    it('prominently returns H.R. Wells as top result when searching "hr"', () => {
+      const results = searchCharacters(CHARACTERS, 'hr');
+      expect(results.length).toBeGreaterThan(0);
+      expect(results[0].character.id).toBe('hr-wells');
+      expect(results[0].character.name).toBe('H.R. Wells');
+    });
+
+    it('matches H.R. Wells when searching punctuated "h.r."', () => {
+      const results = searchCharacters(CHARACTERS, 'h.r.');
+      expect(results.length).toBeGreaterThan(0);
+      expect(results[0].character.id).toBe('hr-wells');
+    });
+
+    it('returns H.R. Wells among top Harrison variants when searching "harr"', () => {
+      const results = searchCharacters(CHARACTERS, 'harr');
+      const ids = results.map((r) => r.character.id);
+      expect(ids).toContain('hr-wells');
+      expect(ids).toContain('harry-wells');
+    });
+
+    it('finds Kristen Kramer when searching "kramer" or "captain kramer"', () => {
+      const byLastName = searchCharacters(CHARACTERS, 'kramer');
+      expect(byLastName.some((r) => r.character.id === 'kristen-kramer')).toBe(true);
+
+      const byTitle = searchCharacters(CHARACTERS, 'captain kramer');
+      expect(byTitle.length).toBeGreaterThan(0);
+      expect(byTitle[0].character.id).toBe('kristen-kramer');
+    });
+  });
 });
+

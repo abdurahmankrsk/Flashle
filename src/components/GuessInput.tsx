@@ -2,6 +2,7 @@ import React, { useState, useRef, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { CHARACTERS } from '../data/characters';
 import type { FlashCharacter } from '../types/character';
+import { searchCharacters } from '../utils/search';
 
 interface GuessInputProps {
   guessedCharacterIds: string[];
@@ -24,43 +25,14 @@ export const GuessInput: React.FC<GuessInputProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
-  // Filter candidates
-  const filteredCharacters = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return [];
-
-    const scored = CHARACTERS.filter((c) => !guessedCharacterIds.includes(c.id))
-      .map((c) => {
-        const nameLower = c.name.toLowerCase();
-        const aliasLowers = c.aliases.map((a) => a.toLowerCase());
-        const actorLower = c.actor.toLowerCase();
-        const roleLower = c.role.toLowerCase();
-
-        let score = 0;
-
-        // Exact matches get highest priority
-        if (aliasLowers.some((a) => a === q)) score = 100;
-        else if (nameLower === q) score = 100;
-        // Starts with
-        else if (aliasLowers.some((a) => a.startsWith(q))) score = 85;
-        else if (nameLower.startsWith(q)) score = 80;
-        // Word boundary match (e.g. searching "thawne" matches "Eobard Thawne", or "zoom" in "Professor Zoom")
-        else if (aliasLowers.some((a) => a.split(/\s+/).some((w) => w.startsWith(q)))) score = 75;
-        else if (nameLower.split(/\s+/).some((w) => w.startsWith(q))) score = 70;
-        // Substring matches
-        else if (aliasLowers.some((a) => a.includes(q))) score = 40;
-        else if (nameLower.includes(q)) score = 35;
-        else if (actorLower.includes(q)) score = 20;
-        else if (roleLower.includes(q)) score = 10;
-
-        return { character: c, score };
-      })
-      .filter((item) => item.score > 0)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 8);
-
-    return scored.map((item) => item.character);
+  // Filter candidates using smart ranked search
+  const searchResults = useMemo(() => {
+    return searchCharacters(CHARACTERS, query, guessedCharacterIds, 8);
   }, [query, guessedCharacterIds]);
+
+  const filteredCharacters = useMemo(() => {
+    return searchResults.map((r) => r.character);
+  }, [searchResults]);
 
   // Handle keyboard events
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -206,8 +178,10 @@ export const GuessInput: React.FC<GuessInputProps> = ({
             className="absolute left-0 right-0 top-full mt-1.5 bg-[#0e101a] border-2 border-[#2b3046] rounded-[6px] shadow-2xl overflow-hidden z-50 max-h-[60vh] sm:max-h-80 overflow-y-auto custom-scrollbar divide-y divide-[#1b1e2c]"
             style={{ WebkitOverflowScrolling: 'touch' }}
           >
-            {filteredCharacters.map((char, index) => {
+            {searchResults.map((match, index) => {
+              const char = match.character;
               const isSelected = index === selectedIndex;
+              const subtitleAlias = match.matchedAlias || (char.aliases.length > 0 ? char.aliases[0] : null);
               return (
                 <li
                   key={char.id}
@@ -253,9 +227,9 @@ export const GuessInput: React.FC<GuessInputProps> = ({
                         <span className="font-tech font-bold text-white text-base sm:text-lg tracking-wide break-words">
                           {char.name}
                         </span>
-                        {char.aliases.length > 0 && (
+                        {subtitleAlias && (
                           <span className="text-xs sm:text-sm text-[#fbbf24] font-tech font-semibold">
-                            ({char.aliases[0]})
+                            ({subtitleAlias})
                           </span>
                         )}
                       </div>
