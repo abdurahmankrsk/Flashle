@@ -1,8 +1,9 @@
 import type { Difficulty } from '../types/character';
+import { track as vercelTrack } from '@vercel/analytics';
 
 /**
  * Lightweight, privacy-conscious analytics client for Flashle.
- * Supports Umami, Plausible, Vercel Web Analytics, or standard custom event dispatch.
+ * Supports Vercel Web Analytics, Umami, Plausible, or standard custom event dispatch.
  * 
  * Guarantees:
  * - No user accounts or personal identifiers required.
@@ -27,23 +28,32 @@ declare global {
 const RETURNING_VISITOR_KEY = 'flashle_last_visit_date';
 
 /**
- * Send an event to configured analytics provider (Umami, Plausible, or Custom)
+ * Send an event to configured analytics provider (Vercel, Umami, Plausible, or Custom)
  */
 function sendEvent(eventName: string, eventData: Record<string, string | number | boolean> = {}): void {
   try {
-    // 1. Umami integration
+    // 1. Vercel Web Analytics
+    if (typeof window !== 'undefined') {
+      try {
+        vercelTrack(eventName, eventData);
+      } catch {
+        // Ignore if Vercel tracker not initialized
+      }
+    }
+
+    // 2. Umami integration
     if (typeof window !== 'undefined' && window.umami && typeof window.umami.track === 'function') {
       window.umami.track(eventName, eventData);
       return;
     }
 
-    // 2. Plausible integration
+    // 3. Plausible integration
     if (typeof window !== 'undefined' && typeof window.plausible === 'function') {
       window.plausible(eventName, { props: eventData });
       return;
     }
 
-    // 3. Optional dev console
+    // 4. Optional dev console
     if (import.meta.env.DEV) {
       console.log(`[Analytics] ${eventName}`, eventData);
     }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { Header } from './components/Header';
 import type { ActiveGameMode } from './components/Header';
 import { GuessInput } from './components/GuessInput';
@@ -585,6 +586,8 @@ export const App: React.FC = () => {
         onSelectPuzzle={handleSelectArchivePuzzle}
         activeDateString={activeMode === 'archive' ? archiveDateString : dateString}
       />
+
+      <Analytics />
     </div>
   );
 };
