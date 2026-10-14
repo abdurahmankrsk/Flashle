@@ -20,7 +20,6 @@ interface StatsModalProps {
   isWon: boolean;
   onToast: (msg: string) => void;
   onResetDaily?: () => void;
-  onRestoreStreak?: (streak: number) => void;
 }
 
 export const StatsModal: React.FC<StatsModalProps> = ({
@@ -35,7 +34,6 @@ export const StatsModal: React.FC<StatsModalProps> = ({
   isWon,
   onToast,
   onResetDaily,
-  onRestoreStreak,
 }) => {
   const modalRef = useModalAccessibility(isOpen, onClose);
 
@@ -196,38 +194,18 @@ export const StatsModal: React.FC<StatsModalProps> = ({
           )}
         </div>
 
-        {(onResetDaily || onRestoreStreak) && (
-          <div className="mt-3 pt-2 text-center border-t border-[#1a1e2e] flex items-center justify-center gap-4 flex-wrap">
-            {onResetDaily && (
-              <button
-                onClick={() => {
-                  onResetDaily();
-                  onClose();
-                }}
-                title="Reset today's daily progress to guess again"
-                className="text-[11px] text-gray-400 hover:text-red-400 underline font-tech uppercase tracking-wider transition-colors cursor-pointer"
-              >
-                Reset Today's Game
-              </button>
-            )}
-            {onRestoreStreak && (
-              <button
-                onClick={() => {
-                  const input = window.prompt("Enter your streak count to restore:", String(stats.currentStreak || 7));
-                  if (input !== null) {
-                    const val = parseInt(input.trim(), 10);
-                    if (!isNaN(val) && val >= 0) {
-                      onRestoreStreak(val);
-                      onClose();
-                    }
-                  }
-                }}
-                title="Manually restore streak"
-                className="text-[11px] text-gray-400 hover:text-[#fbbf24] underline font-tech uppercase tracking-wider transition-colors cursor-pointer"
-              >
-                Restore Streak
-              </button>
-            )}
+        {onResetDaily && (
+          <div className="mt-3 pt-2 text-center border-t border-[#1a1e2e]">
+            <button
+              onClick={() => {
+                onResetDaily();
+                onClose();
+              }}
+              title="Reset today's daily progress to guess again"
+              className="text-[11px] text-gray-400 hover:text-red-400 underline font-tech uppercase tracking-wider transition-colors cursor-pointer"
+            >
+              Reset Today's Game
+            </button>
           </div>
         )}
       </div>
