@@ -280,6 +280,50 @@ export function getActiveStreak(stats: PlayerStats, todayDateString: string): nu
   return 0;
 }
 
+/**
+ * Restores or manually sets player streak, guaranteeing streak continuity.
+ * Updates stats, marks yesterday's archive puzzle as won so consecutive streak
+ * checks pass, and saves to localStorage.
+ */
+export function restoreStreak(
+  newStreak: number,
+  todayDateString: string,
+  isTodayWon: boolean = false
+): PlayerStats {
+  const current = loadStats();
+  const yesterday = new Date(`${todayDateString}T00:00:00Z`);
+  yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+  // Guarantee yesterday is recorded as won in archive so streak continuity is guaranteed
+  saveArchiveState({
+    date: yesterdayStr,
+    dayNumber: 1,
+    guesses: ['barry-allen'],
+    status: 'won',
+    completedAt: new Date().toISOString(),
+  });
+
+  const lastDate = isTodayWon ? todayDateString : yesterdayStr;
+
+  const updated: PlayerStats = {
+    ...current,
+    gamesPlayed: Math.max(current.gamesPlayed, newStreak),
+    gamesWon: Math.max(current.gamesWon, newStreak),
+    currentStreak: newStreak,
+    maxStreak: Math.max(current.maxStreak, newStreak),
+    lastCompletedDate: lastDate,
+  };
+
+  try {
+    localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(updated));
+  } catch (e) {
+    console.error('Failed to save restored streak', e);
+  }
+
+  return updated;
+}
+
 export function recordGameResult(
   won: boolean,
   guessCount: number,

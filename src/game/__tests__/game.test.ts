@@ -11,6 +11,7 @@ import {
   getDaysDifference,
   recordGameResult,
   getActiveStreak,
+  restoreStreak,
   loadArchiveState,
   saveArchiveState,
   INITIAL_STATS,
@@ -323,6 +324,60 @@ describe('Streak Tracking & Calendar Edge Cases', () => {
     // If today is 2 days later, streak has lapsed
     expect(getActiveStreak(stats, '2026-10-11')).toBe(0);
   });
+
+  it('restores streak to specified count and ensures active streak continuity', () => {
+    // Player lost streak (stats is empty or streak 0)
+    const today = '2026-10-14';
+    const restored = restoreStreak(7, today, false);
+
+    expect(restored.currentStreak).toBe(7);
+    expect(restored.maxStreak).toBe(7);
+    expect(restored.gamesPlayed).toBeGreaterThanOrEqual(7);
+    expect(restored.gamesWon).toBeGreaterThanOrEqual(7);
+    expect(restored.lastCompletedDate).toBe('2026-10-13');
+
+    // getActiveStreak returns 7 for today
+    expect(getActiveStreak(restored, today)).toBe(7);
+
+    // Winning today's game advances streak to 8
+    const afterWin = recordGameResult(true, 3, today);
+    expect(afterWin.currentStreak).toBe(8);
+    expect(afterWin.maxStreak).toBe(8);
+    expect(afterWin.lastCompletedDate).toBe(today);
+  });
+
+  it('restores streak when today was already won', () => {
+    const today = '2026-10-14';
+    const restored = restoreStreak(7, today, true);
+
+    expect(restored.currentStreak).toBe(7);
+    expect(restored.lastCompletedDate).toBe(today);
+    expect(getActiveStreak(restored, today)).toBe(7);
+  });
+
+  it('detects yesterday win and preserves active streak', () => {
+    localStorage.clear();
+    // Mock yesterday win in localStorage
+    localStorage.setItem(
+      'flashle_daily_state_v3',
+      JSON.stringify({ date: '2026-10-08', status: 'won', guesses: ['barry-allen'] })
+    );
+
+    const initialStats = {
+      gamesPlayed: 1,
+      gamesWon: 1,
+      currentStreak: 0,
+      maxStreak: 0,
+      guessDistribution: { 1: 1, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0 },
+    };
+
+    const streak = getActiveStreak(initialStats, '2026-10-09');
+    expect(streak).toBe(1);
+
+    // If won today as well, streak becomes 2
+    const resultStats = recordGameResult(true, 3, '2026-10-09');
+    expect(resultStats.currentStreak).toBe(2);
+  });
 });
 
 describe('Analytics Event Dispatcher', () => {
@@ -364,31 +419,9 @@ describe('Share Results Formatter', () => {
     expect(lossShare).toContain('Ran out of tachyons! 🥀');
     expect(lossShare).toContain('Think you know The Flash?');
   });
+});
 
-  it('detects yesterday win and preserves active streak', () => {
-    // Mock yesterday win in localStorage
-    localStorage.setItem(
-      'flashle_daily_state_v3',
-      JSON.stringify({ date: '2026-10-08', status: 'won', guesses: ['barry-allen'] })
-    );
-
-    const initialStats = {
-      gamesPlayed: 1,
-      gamesWon: 1,
-      currentStreak: 0,
-      maxStreak: 0,
-      guessDistribution: { 1: 1, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0 },
-    };
-
-    const streak = getActiveStreak(initialStats, '2026-10-09');
-    expect(streak).toBe(1);
-
-    // If won today as well, streak becomes 2
-    const resultStats = recordGameResult(true, 3, '2026-10-09');
-    expect(resultStats.currentStreak).toBe(2);
-  });
-
-  describe('Kristen Kramer Character Specification', () => {
+describe('Kristen Kramer Character Specification', () => {
     it('includes Kristen Kramer with Hard difficulty and accurate metahuman traits', () => {
       const kramer = CHARACTERS.find((c) => c.id === 'kristen-kramer');
       expect(kramer).toBeDefined();
@@ -463,6 +496,5 @@ describe('Share Results Formatter', () => {
       expect(redDeath?.teams).toContain('Rogues');
     });
   });
-});
 
 
