@@ -434,6 +434,35 @@ describe('Share Results Formatter', () => {
       expect(byTitle.length).toBeGreaterThan(0);
       expect(byTitle[0].character.id).toBe('kristen-kramer');
     });
+
+    it('finds Red Death when searching "red death" or "ryan wilder"', () => {
+      const byVillainName = searchCharacters(CHARACTERS, 'red death');
+      expect(byVillainName.length).toBeGreaterThan(0);
+      expect(byVillainName[0].character.id).toBe('red-death');
+
+      const byRealName = searchCharacters(CHARACTERS, 'ryan wilder');
+      expect(byRealName.length).toBeGreaterThan(0);
+      expect(byRealName[0].character.id).toBe('red-death');
+    });
+  });
+
+  describe('Red Death (Ryan Wilder) Character Specification', () => {
+    it('includes Red Death as a Season 9 speedster villain from Multiverse', () => {
+      const redDeath = CHARACTERS.find((c) => c.id === 'red-death');
+      expect(redDeath).toBeDefined();
+      expect(redDeath?.name).toBe('Ryan Wilder');
+      expect(redDeath?.aliases).toContain('Red Death');
+      expect(redDeath?.actor).toBe('Javicia Leslie');
+      expect(redDeath?.speedster).toBe(true);
+      expect(redDeath?.power).toBe('Super Speed');
+      expect(redDeath?.species).toBe('Human');
+      expect(redDeath?.alignment).toBe('Villain');
+      expect(redDeath?.earth).toBe('Multiverse / Other');
+      expect(redDeath?.firstSeason).toBe(9);
+      expect(redDeath?.seasons).toEqual([9]);
+      expect(redDeath?.teams).toContain('Rogues');
+    });
   });
 });
+
 
