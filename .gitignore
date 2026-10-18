@@ -33,3 +33,6 @@ Thumbs.db
 *.sw?
 *.exe
 .agent/**/bin/
+
+# AI Reference & Instructions (Local Only)
+AI_GUIDE.md
