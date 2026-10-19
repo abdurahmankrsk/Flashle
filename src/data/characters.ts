@@ -113,7 +113,7 @@ export const CHARACTERS: FlashCharacter[] = [
   {
     id: "eobard-thawne",
     name: "Eobard Thawne",
-    aliases: ["Reverse-Flash", "Professor Zoom", "Harrison Wells"],
+    aliases: ["Reverse-Flash", "Harrison Wells"],
     actor: "Tom Cavanagh",
     gender: "Male",
     species: "Metahuman",
@@ -788,7 +788,7 @@ export const CHARACTERS: FlashCharacter[] = [
   {
     id: "john-diggle",
     name: "John Diggle",
-    aliases: ["Spartan", "Green Lantern Candidate"],
+    aliases: ["Spartan"],
     actor: "David Ramsey",
     gender: "Male",
     species: "Human",

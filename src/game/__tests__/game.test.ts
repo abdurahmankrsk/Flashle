@@ -497,4 +497,58 @@ describe('Kristen Kramer Character Specification', () => {
     });
   });
 
+  describe('Eobard Thawne (Reverse-Flash) Character Specification & Search', () => {
+    const thawne = CHARACTERS.find((c) => c.id === 'eobard-thawne');
+
+    it('identifies Eobard Thawne as Reverse-Flash and not Professor Zoom', () => {
+      expect(thawne).toBeDefined();
+      expect(thawne?.name).toBe('Eobard Thawne');
+      expect(thawne?.aliases).toContain('Reverse-Flash');
+      expect(thawne?.aliases).not.toContain('Professor Zoom');
+    });
+
+    it('finds Eobard Thawne when searching "reverse flash" or "reverse-flash"', () => {
+      const resultsSpaced = searchCharacters(CHARACTERS, 'reverse flash');
+      expect(resultsSpaced.length).toBeGreaterThan(0);
+      expect(resultsSpaced[0].character.id).toBe('eobard-thawne');
+      expect(resultsSpaced[0].matchedAlias).toBe('Reverse-Flash');
+
+      const resultsHyphen = searchCharacters(CHARACTERS, 'reverse-flash');
+      expect(resultsHyphen.length).toBeGreaterThan(0);
+      expect(resultsHyphen[0].character.id).toBe('eobard-thawne');
+    });
+
+    it('does not return Eobard Thawne under "Professor Zoom" when searching "zoom"', () => {
+      const zoomResults = searchCharacters(CHARACTERS, 'zoom');
+      const thawneMatch = zoomResults.find((r) => r.character.id === 'eobard-thawne');
+      expect(thawneMatch).toBeUndefined();
+
+      // Top result for "zoom" should be Hunter Zolomon
+      expect(zoomResults[0].character.id).toBe('hunter-zolomon');
+    });
+  });
+
+  describe('John Diggle (Spartan) Character Specification & Search', () => {
+    const diggle = CHARACTERS.find((c) => c.id === 'john-diggle');
+
+    it('identifies John Diggle as Spartan and not Green Lantern Candidate', () => {
+      expect(diggle).toBeDefined();
+      expect(diggle?.name).toBe('John Diggle');
+      expect(diggle?.aliases).toContain('Spartan');
+      expect(diggle?.aliases).not.toContain('Green Lantern Candidate');
+    });
+
+    it('finds John Diggle with Spartan alias when searching "spartan" or "diggle"', () => {
+      const byAlias = searchCharacters(CHARACTERS, 'spartan');
+      expect(byAlias.length).toBeGreaterThan(0);
+      expect(byAlias[0].character.id).toBe('john-diggle');
+      expect(byAlias[0].matchedAlias).toBe('Spartan');
+
+      const byName = searchCharacters(CHARACTERS, 'diggle');
+      expect(byName.length).toBeGreaterThan(0);
+      expect(byName[0].character.id).toBe('john-diggle');
+    });
+  });
+
+
 
