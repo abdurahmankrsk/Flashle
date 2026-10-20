@@ -488,7 +488,7 @@ describe('Kristen Kramer Character Specification', () => {
       expect(redDeath?.actor).toBe('Javicia Leslie');
       expect(redDeath?.speedster).toBe(true);
       expect(redDeath?.power).toBe('Super Speed');
-      expect(redDeath?.species).toBe('Human');
+      expect(redDeath?.species).toBe('Metahuman');
       expect(redDeath?.alignment).toBe('Villain');
       expect(redDeath?.earth).toBe('Multiverse / Other');
       expect(redDeath?.firstSeason).toBe(9);

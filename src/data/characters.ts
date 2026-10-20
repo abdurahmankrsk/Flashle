@@ -899,7 +899,7 @@ export const CHARACTERS: FlashCharacter[] = [
     aliases: ["Red Death", "The Red Death", "Batwoman"],
     actor: "Javicia Leslie",
     gender: "Female",
-    species: "Human",
+    species: "Metahuman",
     alignment: "Villain",
     power: "Super Speed",
     speedster: true,
