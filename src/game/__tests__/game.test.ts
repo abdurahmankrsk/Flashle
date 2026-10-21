@@ -273,6 +273,15 @@ describe('Streak Tracking & Calendar Edge Cases', () => {
     expect(repeated.currentStreak).toBe(1);
   });
 
+  it('allows upgrading same-day result from a loss to a win when replaying', () => {
+    // Player lost first attempt
+    recordGameResult(false, 8, '2026-10-08');
+    // Player resets and wins on retry
+    const upgraded = recordGameResult(true, 4, '2026-10-08');
+    expect(upgraded.currentStreak).toBe(1);
+    expect(upgraded.gamesWon).toBe(1);
+  });
+
   it('increments streak on consecutive calendar day win', () => {
     recordGameResult(true, 3, '2026-10-08');
     const day2 = recordGameResult(true, 4, '2026-10-09');

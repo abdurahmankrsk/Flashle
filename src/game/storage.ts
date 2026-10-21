@@ -77,6 +77,10 @@ export function loadDailyState(currentDateString: string, dayNumber: number): Da
       if (parsed.date === currentDateString) {
         return parsed;
       }
+      // If previous day was finished, preserve it in archive so history & streak detection never lose it
+      if (parsed.date && parsed.status && parsed.status !== 'playing') {
+        saveArchiveState(parsed);
+      }
     }
   } catch (e) {
     console.error('Failed to parse daily state from localStorage', e);
@@ -331,24 +335,32 @@ export function recordGameResult(
 ): PlayerStats {
   const currentStats = loadStats();
 
-  // Avoid recording twice for the same calendar day
-  if (currentStats.lastCompletedDate === dateString) {
+  const isSameDay = Boolean(
+    currentStats.lastCompletedDate &&
+    getDaysDifference(currentStats.lastCompletedDate, dateString) === 0
+  );
+
+  // Avoid recording twice for the same calendar day if already recorded as a win
+  if (isSameDay && currentStats.currentStreak > 0) {
     return currentStats;
   }
 
-  const gamesPlayed = currentStats.gamesPlayed + 1;
-  const gamesWon = won ? currentStats.gamesWon + 1 : currentStats.gamesWon;
+  const gamesPlayed = isSameDay ? currentStats.gamesPlayed : currentStats.gamesPlayed + 1;
+  const gamesWon = won
+    ? (isSameDay && currentStats.gamesWon > 0 ? currentStats.gamesWon : currentStats.gamesWon + 1)
+    : currentStats.gamesWon;
 
   // Streak logic
   let currentStreak = currentStats.currentStreak;
   const yesterdayWon = detectYesterdayPlayedWin(dateString);
 
   if (won) {
-    if (yesterdayWon || (currentStats.lastCompletedDate && getDaysDifference(currentStats.lastCompletedDate, dateString) === 1)) {
+    if (isSameDay) {
+      // Upgraded from a loss to a win on the same calendar day
+      currentStreak = yesterdayWon ? Math.max(currentStreak + 1, 2) : 1;
+    } else if (yesterdayWon || (currentStats.lastCompletedDate && getDaysDifference(currentStats.lastCompletedDate, dateString) === 1)) {
       // Exactly consecutive calendar day
       currentStreak = Math.max(currentStreak + 1, (yesterdayWon && currentStreak === 0 ? 2 : currentStreak + 1));
-    } else if (currentStats.lastCompletedDate && getDaysDifference(currentStats.lastCompletedDate, dateString) === 0) {
-      // Same day (safeguard)
     } else {
       // First win or restarted streak
       currentStreak = 1;
