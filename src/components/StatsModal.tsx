@@ -19,7 +19,6 @@ interface StatsModalProps {
   comparisons: GuessComparison[];
   isWon: boolean;
   onToast: (msg: string) => void;
-  onResetDaily?: () => void;
 }
 
 export const StatsModal: React.FC<StatsModalProps> = ({
@@ -33,7 +32,6 @@ export const StatsModal: React.FC<StatsModalProps> = ({
   comparisons,
   isWon,
   onToast,
-  onResetDaily,
 }) => {
   const modalRef = useModalAccessibility(isOpen, onClose);
 
@@ -193,21 +191,6 @@ export const StatsModal: React.FC<StatsModalProps> = ({
             </button>
           )}
         </div>
-
-        {onResetDaily && (
-          <div className="mt-3 pt-2 text-center border-t border-[#1a1e2e]">
-            <button
-              onClick={() => {
-                onResetDaily();
-                onClose();
-              }}
-              title="Reset today's daily progress to guess again"
-              className="text-[11px] text-gray-400 hover:text-red-400 underline font-tech uppercase tracking-wider transition-colors cursor-pointer"
-            >
-              Reset Today's Game
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );

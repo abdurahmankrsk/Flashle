@@ -649,7 +649,6 @@ export const App: React.FC = () => {
         comparisons={comparisons}
         isWon={dailyState.status === 'won'}
         onToast={(msg) => setToastMessage(msg)}
-        onResetDaily={handleResetDaily}
       />
 
       <ArchiveModal
