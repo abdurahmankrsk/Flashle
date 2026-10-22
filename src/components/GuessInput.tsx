@@ -24,6 +24,7 @@ export const GuessInput: React.FC<GuessInputProps> = ({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const isSubmittingRef = useRef(false);
 
   // Filter candidates using smart ranked search
   const searchResults = useMemo(() => {
@@ -36,7 +37,7 @@ export const GuessInput: React.FC<GuessInputProps> = ({
 
   // Handle keyboard events
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (disabled) return;
+    if (disabled || isWon || isSubmittingRef.current) return;
 
     if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -52,6 +53,7 @@ export const GuessInput: React.FC<GuessInputProps> = ({
       }
     } else if (e.key === 'Enter') {
       e.preventDefault();
+      if (disabled || isWon || isSubmittingRef.current) return;
       if (isOpen && filteredCharacters[selectedIndex]) {
         submitSelection(filteredCharacters[selectedIndex]);
       } else if (filteredCharacters.length === 1) {
@@ -63,9 +65,15 @@ export const GuessInput: React.FC<GuessInputProps> = ({
   };
 
   const submitSelection = (character: FlashCharacter) => {
-    onGuess(character);
+    if (disabled || isWon || isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+    inputRef.current?.blur();
     setQuery('');
     setIsOpen(false);
+    onGuess(character);
+    setTimeout(() => {
+      isSubmittingRef.current = false;
+    }, 500);
   };
 
   const currentAttempt = disabled
@@ -155,13 +163,13 @@ export const GuessInput: React.FC<GuessInputProps> = ({
           {filteredCharacters.length > 0 && query.trim() && (
             <button
               type="button"
-              disabled={disabled}
+              disabled={disabled || isWon}
               onClick={() => {
-                if (filteredCharacters[selectedIndex]) {
+                if (filteredCharacters[selectedIndex] && !disabled && !isWon && !isSubmittingRef.current) {
                   submitSelection(filteredCharacters[selectedIndex]);
                 }
               }}
-              className="mr-2 px-3 sm:px-4 py-2 min-h-[44px] min-w-[64px] bg-[#dc2626] hover:bg-[#ef4444] text-white font-tech font-bold text-xs sm:text-sm uppercase tracking-wider rounded-[6px] transition-transform active:scale-95 shadow-md cursor-pointer shrink-0 flex items-center justify-center"
+              className="mr-2 px-3 sm:px-4 py-2 min-h-[44px] min-w-[64px] bg-[#dc2626] hover:bg-[#ef4444] text-white font-tech font-bold text-xs sm:text-sm uppercase tracking-wider rounded-[6px] transition-transform active:scale-95 shadow-md cursor-pointer shrink-0 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span>Guess</span>
             </button>
@@ -169,7 +177,7 @@ export const GuessInput: React.FC<GuessInputProps> = ({
         </div>
 
         {/* Autocomplete Dropdown with clear readable layout */}
-        {isOpen && filteredCharacters.length > 0 && !disabled && (
+        {isOpen && filteredCharacters.length > 0 && !disabled && !isWon && (
           <ul
             ref={listRef}
             id="character-suggestions-list"
@@ -189,7 +197,11 @@ export const GuessInput: React.FC<GuessInputProps> = ({
                   role="option"
                   aria-selected={isSelected}
                   onMouseEnter={() => setSelectedIndex(index)}
-                  onClick={() => submitSelection(char)}
+                  onClick={() => {
+                    if (!disabled && !isWon && !isSubmittingRef.current) {
+                      submitSelection(char);
+                    }
+                  }}
                   className={`px-3 py-2.5 sm:py-3 flex items-center justify-between cursor-pointer transition-colors min-h-[50px] ${
                     isSelected
                       ? 'bg-[#1e2338] text-white ring-1 ring-inset ring-[#ef4444]/40'

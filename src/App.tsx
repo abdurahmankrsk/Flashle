@@ -31,6 +31,7 @@ import {
   loadStats,
   getActiveStreak,
   recordGameResult,
+  restoreStreak,
 } from './game/storage';
 import type { PlayerStats, DailyGameState } from './game/storage';
 import {
@@ -70,7 +71,26 @@ export const App: React.FC = () => {
   const [dailyState, setDailyState] = useState<DailyGameState>(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      if (params.has('reset')) {
+      const hasReset = params.has('reset');
+      const streakParam = params.get('restoreStreak') || params.get('streak');
+      const hasWin = params.has('win') || params.has('todayWon');
+
+      if (hasWin) {
+        clearDailyState();
+        const wonState: DailyGameState = {
+          date: dateString,
+          dayNumber,
+          guesses: [dailyInfo.character.id],
+          status: 'won',
+          completedAt: new Date().toISOString(),
+        };
+        saveDailyState(wonState);
+        saveArchiveState(wonState);
+        return wonState;
+      }
+
+      const loaded = loadDailyState(dateString, dayNumber);
+      if (hasReset || (streakParam && loaded.status === 'lost')) {
         clearDailyState();
         return {
           date: dateString,
@@ -79,6 +99,7 @@ export const App: React.FC = () => {
           status: 'playing',
         };
       }
+      return loaded;
     }
     return loadDailyState(dateString, dayNumber);
   });
@@ -89,7 +110,23 @@ export const App: React.FC = () => {
   });
 
   // Stats & Streak
-  const [stats, setStats] = useState<PlayerStats>(() => loadStats());
+  const [stats, setStats] = useState<PlayerStats>(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const streakParam = params.get('restoreStreak') || params.get('streak');
+      const hasWin = params.has('win') || params.has('todayWon');
+      if (streakParam) {
+        const val = parseInt(streakParam, 10);
+        if (!isNaN(val) && val >= 0) {
+          const loadedDaily = loadDailyState(dateString, dayNumber);
+          const hasReset = params.has('reset');
+          const isTodayWon = hasWin || (!hasReset && loadedDaily.status === 'won');
+          return restoreStreak(val, dateString, isTodayWon);
+        }
+      }
+    }
+    return loadStats();
+  });
   const activeStreak = useMemo(() => {
     return getActiveStreak(stats, dateString);
   }, [stats, dateString]);
@@ -101,7 +138,22 @@ export const App: React.FC = () => {
   const [showStats, setShowStats] = useState<boolean>(false);
   const [showArchive, setShowArchive] = useState<boolean>(false);
   const [showEndGame, setShowEndGame] = useState<boolean>(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const streakParam = params.get('restoreStreak') || params.get('streak');
+      if (streakParam) {
+        const val = parseInt(streakParam, 10);
+        if (!isNaN(val) && val >= 0) {
+          const hasWin = params.has('win') || params.has('todayWon');
+          return hasWin
+            ? `⚡ Streak restored to ${val} & today's puzzle marked won!`
+            : `⚡ Streak restored to ${val}!`;
+        }
+      }
+    }
+    return null;
+  });
   const [newestGuessId, setNewestGuessId] = useState<string | undefined>(undefined);
   const [screenReaderAnnouncement, setScreenReaderAnnouncement] = useState<string>('');
 
@@ -166,12 +218,19 @@ export const App: React.FC = () => {
     setToastMessage("Today's game has been reset!");
   }, [dateString, dayNumber]);
 
-  // Clean up URL query parameters (?reset)
+  // Clean up URL query parameters (?streak=X, ?restoreStreak=X, ?win, ?todayWon, ?reset)
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      if (params.has('reset')) {
-        params.delete('reset');
+      const toDelete = ['restoreStreak', 'streak', 'win', 'todayWon', 'reset'];
+      let changed = false;
+      for (const param of toDelete) {
+        if (params.has(param)) {
+          params.delete(param);
+          changed = true;
+        }
+      }
+      if (changed) {
         const newSearch = params.toString() ? `?${params.toString()}` : '';
         window.history.replaceState({}, document.title, `${window.location.pathname}${newSearch}`);
       }
@@ -313,10 +372,22 @@ export const App: React.FC = () => {
     setToastMessage("Returned to today's daily puzzle!");
   };
 
+  // Submission lock ref to block any rapid clicks or double-tap race conditions
+  const isSubmittingGuessRef = useRef(false);
+
   // Submit a guess
   const handleGuess = useCallback(
     (character: FlashCharacter) => {
       if (currentStatus !== 'playing') return;
+      if (activeMode === 'daily' && dailyState.status !== 'playing') return;
+      if (activeMode === 'archive' && archiveState.status !== 'playing') return;
+      if (activeMode === 'practice' && practiceStatus !== 'playing') return;
+      if (isSubmittingGuessRef.current) return;
+
+      isSubmittingGuessRef.current = true;
+      setTimeout(() => {
+        isSubmittingGuessRef.current = false;
+      }, 800);
 
       // Ensure we never record a guess on a stale calendar day if tab was in background
       if (activeMode === 'daily') {
@@ -332,64 +403,124 @@ export const App: React.FC = () => {
         return;
       }
 
-      const nextGuesses = [...currentGuesses, character.id];
-      const isWon = character.id === currentSecret.id;
-      const isLost = !isWon && nextGuesses.length >= MAX_GUESSES;
-      const nextStatus = isWon ? 'won' : isLost ? 'lost' : 'playing';
-
-      setNewestGuessId(character.id);
-
-      // Accessible live announcement for assistive technologies
-      if (isWon) {
-        setScreenReaderAnnouncement(
-          `Congratulations! You guessed ${character.name} and solved the mystery in ${nextGuesses.length} attempts!`
-        );
-      } else if (isLost) {
-        setScreenReaderAnnouncement(
-          `Game over. You ran out of attempts. The secret character was ${currentSecret.name}.`
-        );
-      } else {
-        setScreenReaderAnnouncement(
-          `Guessed ${character.name}. ${MAX_GUESSES - nextGuesses.length} attempts remaining.`
-        );
-      }
-
       if (activeMode === 'daily') {
-        const nextState: DailyGameState = {
-          ...dailyState,
-          guesses: nextGuesses,
-          status: nextStatus,
-          completedAt: nextStatus !== 'playing' ? new Date().toISOString() : undefined,
-        };
-        setDailyState(nextState);
+        setDailyState((prev) => {
+          // If already won or lost, never allow mutating or overwriting
+          if (prev.status !== 'playing') return prev;
+          if (prev.guesses.includes(character.id)) return prev;
 
-        if (nextStatus !== 'playing') {
-          saveArchiveState(nextState);
-          const updatedStats = recordGameResult(isWon, nextGuesses.length, dateString);
-          setStats(updatedStats);
-          trackPuzzleComplete('daily', isWon, nextGuesses.length, dailyInfo.difficulty, dayNumber);
-          setTimeout(() => {
-            setShowEndGame(true);
-          }, 800);
-        }
+          const nextGuesses = [...prev.guesses, character.id];
+          const isWon = character.id === currentSecret.id;
+          const isLost = !isWon && nextGuesses.length >= MAX_GUESSES;
+          const nextStatus = isWon ? 'won' : isLost ? 'lost' : 'playing';
+
+          setNewestGuessId(character.id);
+
+          if (isWon) {
+            setScreenReaderAnnouncement(
+              `Congratulations! You guessed ${character.name} and solved the mystery in ${nextGuesses.length} attempts!`
+            );
+          } else if (isLost) {
+            setScreenReaderAnnouncement(
+              `Game over. You ran out of attempts. The secret character was ${currentSecret.name}.`
+            );
+          } else {
+            setScreenReaderAnnouncement(
+              `Guessed ${character.name}. ${MAX_GUESSES - nextGuesses.length} attempts remaining.`
+            );
+          }
+
+          const nextState: DailyGameState = {
+            ...prev,
+            guesses: nextGuesses,
+            status: nextStatus,
+            completedAt: nextStatus !== 'playing' ? new Date().toISOString() : undefined,
+          };
+
+          saveDailyState(nextState);
+
+          if (nextStatus !== 'playing') {
+            saveArchiveState(nextState);
+            const updatedStats = recordGameResult(isWon, nextGuesses.length, dateString);
+            setStats(updatedStats);
+            trackPuzzleComplete('daily', isWon, nextGuesses.length, dailyInfo.difficulty, dayNumber);
+            setTimeout(() => {
+              setShowEndGame(true);
+            }, 800);
+          }
+
+          return nextState;
+        });
       } else if (activeMode === 'archive') {
-        const nextState: DailyGameState = {
-          ...archiveState,
-          guesses: nextGuesses,
-          status: nextStatus,
-          completedAt: nextStatus !== 'playing' ? new Date().toISOString() : undefined,
-        };
-        setArchiveState(nextState);
-        saveArchiveState(nextState);
+        setArchiveState((prev) => {
+          if (prev.status !== 'playing') return prev;
+          if (prev.guesses.includes(character.id)) return prev;
 
-        if (nextStatus !== 'playing') {
-          trackPuzzleComplete('archive', isWon, nextGuesses.length, archiveInfo.difficulty, archiveInfo.dayNumber);
-          setTimeout(() => {
-            setShowEndGame(true);
-          }, 800);
-        }
+          const nextGuesses = [...prev.guesses, character.id];
+          const isWon = character.id === currentSecret.id;
+          const isLost = !isWon && nextGuesses.length >= MAX_GUESSES;
+          const nextStatus = isWon ? 'won' : isLost ? 'lost' : 'playing';
+
+          setNewestGuessId(character.id);
+
+          if (isWon) {
+            setScreenReaderAnnouncement(
+              `Congratulations! You guessed ${character.name} and solved the mystery in ${nextGuesses.length} attempts!`
+            );
+          } else if (isLost) {
+            setScreenReaderAnnouncement(
+              `Game over. You ran out of attempts. The secret character was ${currentSecret.name}.`
+            );
+          } else {
+            setScreenReaderAnnouncement(
+              `Guessed ${character.name}. ${MAX_GUESSES - nextGuesses.length} attempts remaining.`
+            );
+          }
+
+          const nextState: DailyGameState = {
+            ...prev,
+            guesses: nextGuesses,
+            status: nextStatus,
+            completedAt: nextStatus !== 'playing' ? new Date().toISOString() : undefined,
+          };
+
+          saveArchiveState(nextState);
+
+          if (nextStatus !== 'playing') {
+            trackPuzzleComplete('archive', isWon, nextGuesses.length, archiveInfo.difficulty, archiveInfo.dayNumber);
+            setTimeout(() => {
+              setShowEndGame(true);
+            }, 800);
+          }
+
+          return nextState;
+        });
       } else {
         // Practice mode
+        if (practiceStatus !== 'playing') return;
+        if (practiceGuesses.includes(character.id)) return;
+
+        const nextGuesses = [...practiceGuesses, character.id];
+        const isWon = character.id === currentSecret.id;
+        const isLost = !isWon && nextGuesses.length >= MAX_GUESSES;
+        const nextStatus = isWon ? 'won' : isLost ? 'lost' : 'playing';
+
+        setNewestGuessId(character.id);
+
+        if (isWon) {
+          setScreenReaderAnnouncement(
+            `Congratulations! You guessed ${character.name} and solved the mystery in ${nextGuesses.length} attempts!`
+          );
+        } else if (isLost) {
+          setScreenReaderAnnouncement(
+            `Game over. You ran out of attempts. The secret character was ${currentSecret.name}.`
+          );
+        } else {
+          setScreenReaderAnnouncement(
+            `Guessed ${character.name}. ${MAX_GUESSES - nextGuesses.length} attempts remaining.`
+          );
+        }
+
         setPracticeGuesses(nextGuesses);
         setPracticeStatus(nextStatus);
 
@@ -406,8 +537,10 @@ export const App: React.FC = () => {
       currentGuesses,
       currentSecret,
       activeMode,
-      dailyState,
-      archiveState,
+      dailyState.status,
+      archiveState.status,
+      practiceStatus,
+      practiceGuesses,
       dateString,
       dayNumber,
       dailyInfo.difficulty,

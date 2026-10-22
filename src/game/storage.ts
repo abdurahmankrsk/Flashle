@@ -308,6 +308,16 @@ export function restoreStreak(
     completedAt: new Date().toISOString(),
   });
 
+  if (isTodayWon) {
+    saveArchiveState({
+      date: todayDateString,
+      dayNumber: 1,
+      guesses: ['barry-allen'],
+      status: 'won',
+      completedAt: new Date().toISOString(),
+    });
+  }
+
   const lastDate = isTodayWon ? todayDateString : yesterdayStr;
 
   const updated: PlayerStats = {
@@ -316,6 +326,10 @@ export function restoreStreak(
     gamesWon: Math.max(current.gamesWon, newStreak),
     currentStreak: newStreak,
     maxStreak: Math.max(current.maxStreak, newStreak),
+    guessDistribution: {
+      ...current.guessDistribution,
+      1: Math.max(current.guessDistribution[1] || 0, isTodayWon ? 1 : (current.guessDistribution[1] || 0)),
+    },
     lastCompletedDate: lastDate,
   };
 

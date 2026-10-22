@@ -364,6 +364,24 @@ describe('Streak Tracking & Calendar Edge Cases', () => {
     expect(getActiveStreak(restored, today)).toBe(7);
   });
 
+  it('preserves streak into next calendar day when restored with isTodayWon = true', () => {
+    localStorage.clear();
+    const today = '2026-10-22';
+    const tomorrow = '2026-10-23';
+    const restored = restoreStreak(14, today, true);
+
+    expect(restored.currentStreak).toBe(14);
+    expect(restored.lastCompletedDate).toBe(today);
+    expect(getActiveStreak(restored, today)).toBe(14);
+
+    // Tomorrow morning before playing:
+    expect(getActiveStreak(restored, tomorrow)).toBe(14);
+
+    // Tomorrow winning advances to 15:
+    const tomorrowWin = recordGameResult(true, 2, tomorrow);
+    expect(tomorrowWin.currentStreak).toBe(15);
+  });
+
   it('detects yesterday win and preserves active streak', () => {
     localStorage.clear();
     // Mock yesterday win in localStorage
