@@ -983,6 +983,24 @@ export const CHARACTERS: FlashCharacter[] = [
     role: "Precognitive Dream-Walking Superhero Ally",
     difficulty: "Medium",
   },
+  {
+    id: "clark-kent",
+    name: "Clark Kent",
+    aliases: ["Superman", "Kal-El", "Man of Steel"],
+    actor: "Tyler Hoechlin",
+    gender: "Male",
+    species: "Kryptonian",
+    alignment: "Hero",
+    power: "Kryptonian Physiology",
+    speedster: false,
+    firstSeason: 5,
+    seasons: [5, 6],
+    earth: "Earth-38",
+    teams: ["Super Friends", "Justice League", "DEO"],
+    quote: "It's not about where you were born, or the powers you have. It's about what you do.",
+    role: "Earth-38 Superhero / Daily Planet Reporter / Man of Steel",
+    difficulty: "Medium",
+  },
 
   // --- HARD DIFFICULTY: Obscure Metahumans, Niche Villains, Deep Lore ---
   {

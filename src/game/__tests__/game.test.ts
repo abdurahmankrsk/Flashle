@@ -577,5 +577,43 @@ describe('Kristen Kramer Character Specification', () => {
     });
   });
 
+  describe('Clark Kent (Superman) Character Specification & Search', () => {
+    const clark = CHARACTERS.find((c) => c.id === 'clark-kent');
+
+    it('includes Clark Kent as a Kryptonian hero from Earth-38', () => {
+      expect(clark).toBeDefined();
+      expect(clark?.name).toBe('Clark Kent');
+      expect(clark?.aliases).toContain('Superman');
+      expect(clark?.aliases).toContain('Man of Steel');
+      expect(clark?.actor).toBe('Tyler Hoechlin');
+      expect(clark?.species).toBe('Kryptonian');
+      expect(clark?.alignment).toBe('Hero');
+      expect(clark?.power).toBe('Kryptonian Physiology');
+      expect(clark?.speedster).toBe(false);
+      expect(clark?.earth).toBe('Earth-38');
+      expect(clark?.firstSeason).toBe(5);
+      expect(clark?.seasons).toEqual([5, 6]);
+      expect(clark?.teams).toContain('Justice League');
+      expect(clark?.teams).toContain('Super Friends');
+      expect(clark?.teams).toContain('DEO');
+      expect(clark?.difficulty).toBe('Medium');
+    });
+
+    it('finds Clark Kent when searching "superman", "clark", or "man of steel"', () => {
+      const byHeroName = searchCharacters(CHARACTERS, 'superman');
+      expect(byHeroName.length).toBeGreaterThan(0);
+      expect(byHeroName[0].character.id).toBe('clark-kent');
+      expect(byHeroName[0].matchedAlias).toBe('Superman');
+
+      const byCivilianName = searchCharacters(CHARACTERS, 'clark');
+      expect(byCivilianName.length).toBeGreaterThan(0);
+      expect(byCivilianName[0].character.id).toBe('clark-kent');
+
+      const byManOfSteel = searchCharacters(CHARACTERS, 'man of steel');
+      expect(byManOfSteel.length).toBeGreaterThan(0);
+      expect(byManOfSteel[0].character.id).toBe('clark-kent');
+    });
+  });
+
 
 
