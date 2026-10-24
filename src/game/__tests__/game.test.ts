@@ -615,5 +615,38 @@ describe('Kristen Kramer Character Specification', () => {
     });
   });
 
+  describe('Jefferson Jackson (Firestorm) Character Specification & Search', () => {
+    const jax = CHARACTERS.find((c) => c.id === 'jefferson-jackson');
+
+    it('includes Jefferson Jackson with accurate Firestorm attributes', () => {
+      expect(jax).toBeDefined();
+      expect(jax?.name).toBe('Jefferson Jackson');
+      expect(jax?.aliases).toContain('Jax');
+      expect(jax?.aliases).toContain('Firestorm');
+      expect(jax?.actor).toBe('Franz Drameh');
+      expect(jax?.species).toBe('Metahuman');
+      expect(jax?.alignment).toBe('Hero');
+      expect(jax?.power).toBe('Pyrokinesis / Nuclear');
+      expect(jax?.speedster).toBe(false);
+      expect(jax?.earth).toBe('Earth-1 / Prime');
+      expect(jax?.firstSeason).toBe(2);
+      expect(jax?.seasons).toEqual([2, 3, 4]);
+      expect(jax?.teams).toContain('Team Flash');
+      expect(jax?.teams).toContain('Legends of Tomorrow');
+      expect(jax?.difficulty).toBe('Medium');
+    });
+
+    it('finds Jefferson Jackson when searching "jax" or "jefferson"', () => {
+      const byAlias = searchCharacters(CHARACTERS, 'jax');
+      expect(byAlias.length).toBeGreaterThan(0);
+      expect(byAlias[0].character.id).toBe('jefferson-jackson');
+      expect(byAlias[0].matchedAlias).toBe('Jax');
+
+      const byFirstName = searchCharacters(CHARACTERS, 'jefferson');
+      expect(byFirstName.length).toBeGreaterThan(0);
+      expect(byFirstName[0].character.id).toBe('jefferson-jackson');
+    });
+  });
+
 
 
