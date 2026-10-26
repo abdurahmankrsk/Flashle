@@ -648,5 +648,37 @@ describe('Kristen Kramer Character Specification', () => {
     });
   });
 
+  describe('Thomas Snow (Icicle) Character Specification & Search', () => {
+    const thomas = CHARACTERS.find((c) => c.id === 'thomas-snow');
+
+    it('includes Thomas Snow with accurate Cryokinesis and Villain attributes', () => {
+      expect(thomas).toBeDefined();
+      expect(thomas?.name).toBe('Thomas Snow');
+      expect(thomas?.aliases).toContain('Icicle');
+      expect(thomas?.aliases).toContain('Dr. Snow');
+      expect(thomas?.actor).toBe('Kyle Secor');
+      expect(thomas?.species).toBe('Metahuman');
+      expect(thomas?.alignment).toBe('Villain');
+      expect(thomas?.power).toBe('Cryokinesis');
+      expect(thomas?.speedster).toBe(false);
+      expect(thomas?.earth).toBe('Earth-1 / Prime');
+      expect(thomas?.firstSeason).toBe(5);
+      expect(thomas?.seasons).toEqual([5]);
+      expect(thomas?.teams).toContain('Tannhauser Laboratories');
+      expect(thomas?.difficulty).toBe('Hard');
+    });
+
+    it('finds Thomas Snow when searching "icicle" or "thomas snow"', () => {
+      const byAlias = searchCharacters(CHARACTERS, 'icicle');
+      expect(byAlias.length).toBeGreaterThan(0);
+      expect(byAlias[0].character.id).toBe('thomas-snow');
+      expect(byAlias[0].matchedAlias).toBe('Icicle');
+
+      const byFullName = searchCharacters(CHARACTERS, 'thomas snow');
+      expect(byFullName.length).toBeGreaterThan(0);
+      expect(byFullName[0].character.id).toBe('thomas-snow');
+    });
+  });
+
 
 
