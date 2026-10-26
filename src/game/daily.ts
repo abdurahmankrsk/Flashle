@@ -84,6 +84,30 @@ export function getDailyDifficulty(dayNumber: number): Difficulty {
   return 'Very Hard';                  // 950..999 (5%)
 }
 
+// Canonical list of daily characters for past and current launch days to guarantee
+// that adding new characters to the roster never mutates past or active daily puzzles.
+export const HISTORICAL_DAILY_CHARACTERS: Record<number, string> = {
+  1: 'martin-stein',
+  2: 'rag-doll',
+  3: 'killer-frost',
+  4: 'gorilla-grodd',
+  5: 'jay-garrick',
+  6: 'clark-kent',
+  7: 'kristen-kramer',
+  8: 'plastique',
+  9: 'jaco-birch',
+  10: 'hunter-zolomon',
+  11: 'mark-blaine',
+  12: 'leonard-snart',
+  13: 'sam-scudder',
+  14: 'amunet-black',
+  15: 'savitar',
+  16: 'caitlin-snow',
+  17: 'mick-rory',
+  18: 'grace-gibbons',
+  19: 'original-wells',
+};
+
 export function getDailyCharacter(date: Date = new Date()): {
   character: FlashCharacter;
   dayNumber: number;
@@ -92,6 +116,21 @@ export function getDailyCharacter(date: Date = new Date()): {
 } {
   const dateString = getTodayDateString(date);
   const dayNumber = getDayNumber(date);
+
+  // 1. Check fixed historical canonical mapping first so roster additions never mutate past/current puzzles
+  if (HISTORICAL_DAILY_CHARACTERS[dayNumber]) {
+    const historicalChar = CHARACTERS.find((c) => c.id === HISTORICAL_DAILY_CHARACTERS[dayNumber]);
+    if (historicalChar) {
+      return {
+        character: historicalChar,
+        dayNumber,
+        dateString,
+        difficulty: historicalChar.difficulty,
+      };
+    }
+  }
+
+  // 2. Deterministic pseudo-random generation for upcoming/future days
   const difficulty = getDailyDifficulty(dayNumber);
   const pool = CHARACTERS.filter((c) => c.difficulty === difficulty);
   const activePool = pool.length > 0 ? pool : CHARACTERS;
@@ -129,7 +168,9 @@ export function getHistoricalPuzzles(currentDate: Date = new Date()): Historical
     const timeForDay = anchorTime + (day - 1) * 24 * 60 * 60 * 1000;
     const dateObj = new Date(timeForDay);
     const dateStr = getTodayDateString(dateObj);
-    const diff = getDailyDifficulty(day);
+    const diff = HISTORICAL_DAILY_CHARACTERS[day]
+      ? (CHARACTERS.find((c) => c.id === HISTORICAL_DAILY_CHARACTERS[day])?.difficulty ?? getDailyDifficulty(day))
+      : getDailyDifficulty(day);
 
     const formatter = new Intl.DateTimeFormat('en-US', {
       timeZone: SARAJEVO_TZ,

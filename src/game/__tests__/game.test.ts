@@ -5,6 +5,7 @@ import {
   getDailyCharacter,
   getDailyCharacterForDate,
   getHistoricalPuzzles,
+  HISTORICAL_DAILY_CHARACTERS,
 } from '../daily';
 import { generateShareText } from '../share';
 import {
@@ -677,6 +678,32 @@ describe('Kristen Kramer Character Specification', () => {
       const byFullName = searchCharacters(CHARACTERS, 'thomas snow');
       expect(byFullName.length).toBeGreaterThan(0);
       expect(byFullName[0].character.id).toBe('thomas-snow');
+    });
+  });
+
+  describe('Historical Daily Puzzles Stability & Day 19 Verification', () => {
+    it('pins Day 19 to Dr. Harrison Wells (Original) and returns full green match', () => {
+      const day19 = getDailyCharacterForDate('2026-10-26');
+      expect(day19.dayNumber).toBe(19);
+      expect(day19.character.id).toBe('original-wells');
+      expect(day19.character.name).toBe('Dr. Harrison Wells (Original)');
+
+      const comp = compareGuess(day19.character, day19.character);
+      expect(comp.isCorrect).toBe(true);
+      expect(comp.gender.status).toBe('correct');
+      expect(comp.species.status).toBe('correct');
+      expect(comp.power.status).toBe('correct');
+      expect(comp.alignment.status).toBe('correct');
+      expect(comp.firstSeason.status).toBe('correct');
+      expect(comp.earth.status).toBe('correct');
+      expect(comp.teams.status).toBe('correct');
+    });
+
+    it('ensures all historical mapped characters exist in CHARACTERS roster', () => {
+      for (const [day, id] of Object.entries(HISTORICAL_DAILY_CHARACTERS)) {
+        const found = CHARACTERS.find((c) => c.id === id);
+        expect(found, `Day ${day} character (${id}) must exist`).toBeDefined();
+      }
     });
   });
 
