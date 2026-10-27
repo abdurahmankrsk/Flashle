@@ -681,6 +681,36 @@ describe('Kristen Kramer Character Specification', () => {
     });
   });
 
+  describe('Tracy Brand Character Specification & Search', () => {
+    const tracy = CHARACTERS.find((c) => c.id === 'tracy-brand');
+
+    it('includes Tracy Brand with accurate Team Flash scientist attributes', () => {
+      expect(tracy).toBeDefined();
+      expect(tracy?.name).toBe('Tracy Brand');
+      expect(tracy?.aliases).toContain('Dr. Brand');
+      expect(tracy?.actor).toBe('Anne Dudek');
+      expect(tracy?.species).toBe('Human');
+      expect(tracy?.alignment).toBe('Hero');
+      expect(tracy?.power).toBe('None');
+      expect(tracy?.speedster).toBe(false);
+      expect(tracy?.earth).toBe('Earth-1 / Prime');
+      expect(tracy?.firstSeason).toBe(3);
+      expect(tracy?.seasons).toEqual([3]);
+      expect(tracy?.teams).toContain('Team Flash');
+      expect(tracy?.difficulty).toBe('Hard');
+    });
+
+    it('finds Tracy Brand when searching "tracy" or "brand"', () => {
+      const byFirstName = searchCharacters(CHARACTERS, 'tracy');
+      expect(byFirstName.length).toBeGreaterThan(0);
+      expect(byFirstName[0].character.id).toBe('tracy-brand');
+
+      const byLastName = searchCharacters(CHARACTERS, 'brand');
+      expect(byLastName.length).toBeGreaterThan(0);
+      expect(byLastName[0].character.id).toBe('tracy-brand');
+    });
+  });
+
   describe('Historical Daily Puzzles Stability & Day 19 Verification', () => {
     it('pins Day 19 to Dr. Harrison Wells (Original) and returns full green match', () => {
       const day19 = getDailyCharacterForDate('2026-10-26');

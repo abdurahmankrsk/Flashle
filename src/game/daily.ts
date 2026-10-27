@@ -106,6 +106,7 @@ export const HISTORICAL_DAILY_CHARACTERS: Record<number, string> = {
   17: 'mick-rory',
   18: 'grace-gibbons',
   19: 'original-wells',
+  20: 'solovar',
 };
 
 export function getDailyCharacter(date: Date = new Date()): {
