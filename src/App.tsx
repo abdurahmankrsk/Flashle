@@ -31,6 +31,7 @@ import {
   loadStats,
   getActiveStreak,
   recordGameResult,
+  restoreStreak,
 } from './game/storage';
 import type { PlayerStats, DailyGameState } from './game/storage';
 import {
@@ -70,7 +71,26 @@ export const App: React.FC = () => {
   const [dailyState, setDailyState] = useState<DailyGameState>(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      if (params.has('reset')) {
+      const hasReset = params.has('reset');
+      const streakParam = params.get('restoreStreak') || params.get('streak');
+      const hasWin = params.has('win') || params.has('todayWon');
+
+      if (hasWin) {
+        clearDailyState();
+        const wonState: DailyGameState = {
+          date: dateString,
+          dayNumber,
+          guesses: [dailyInfo.character.id],
+          status: 'won',
+          completedAt: new Date().toISOString(),
+        };
+        saveDailyState(wonState);
+        saveArchiveState(wonState);
+        return wonState;
+      }
+
+      const loaded = loadDailyState(dateString, dayNumber);
+      if (hasReset || (streakParam && loaded.status === 'lost')) {
         clearDailyState();
         return {
           date: dateString,
@@ -79,6 +99,7 @@ export const App: React.FC = () => {
           status: 'playing',
         };
       }
+      return loaded;
     }
     return loadDailyState(dateString, dayNumber);
   });
@@ -89,7 +110,23 @@ export const App: React.FC = () => {
   });
 
   // Stats & Streak
-  const [stats, setStats] = useState<PlayerStats>(() => loadStats());
+  const [stats, setStats] = useState<PlayerStats>(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const streakParam = params.get('restoreStreak') || params.get('streak');
+      const hasWin = params.has('win') || params.has('todayWon');
+      if (streakParam) {
+        const val = parseInt(streakParam, 10);
+        if (!isNaN(val) && val >= 0) {
+          const loadedDaily = loadDailyState(dateString, dayNumber);
+          const hasReset = params.has('reset');
+          const isTodayWon = hasWin || (!hasReset && loadedDaily.status === 'won');
+          return restoreStreak(val, dateString, isTodayWon);
+        }
+      }
+    }
+    return loadStats();
+  });
   const activeStreak = useMemo(() => {
     return getActiveStreak(stats, dateString);
   }, [stats, dateString]);
@@ -101,7 +138,22 @@ export const App: React.FC = () => {
   const [showStats, setShowStats] = useState<boolean>(false);
   const [showArchive, setShowArchive] = useState<boolean>(false);
   const [showEndGame, setShowEndGame] = useState<boolean>(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const streakParam = params.get('restoreStreak') || params.get('streak');
+      if (streakParam) {
+        const val = parseInt(streakParam, 10);
+        if (!isNaN(val) && val >= 0) {
+          const hasWin = params.has('win') || params.has('todayWon');
+          return hasWin
+            ? `⚡ Streak restored to ${val} & today's puzzle marked won!`
+            : `⚡ Streak restored to ${val}!`;
+        }
+      }
+    }
+    return null;
+  });
   const [newestGuessId, setNewestGuessId] = useState<string | undefined>(undefined);
   const [screenReaderAnnouncement, setScreenReaderAnnouncement] = useState<string>('');
 
@@ -166,12 +218,19 @@ export const App: React.FC = () => {
     setToastMessage("Today's game has been reset!");
   }, [dateString, dayNumber]);
 
-  // Clean up URL query parameters (?reset)
+  // Clean up URL query parameters (?streak=X, ?restoreStreak=X, ?win, ?todayWon, ?reset)
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      if (params.has('reset')) {
-        params.delete('reset');
+      const toDelete = ['restoreStreak', 'streak', 'win', 'todayWon', 'reset'];
+      let changed = false;
+      for (const param of toDelete) {
+        if (params.has(param)) {
+          params.delete(param);
+          changed = true;
+        }
+      }
+      if (changed) {
         const newSearch = params.toString() ? `?${params.toString()}` : '';
         window.history.replaceState({}, document.title, `${window.location.pathname}${newSearch}`);
       }
