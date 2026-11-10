@@ -315,6 +315,8 @@ describe('Streak Tracking & Calendar Edge Cases', () => {
     expect(lostDay.maxStreak).toBe(2);
     expect(lostDay.gamesWon).toBe(2);
     expect(lostDay.gamesPlayed).toBe(3);
+    // Crucial: getActiveStreak must evaluate to 0, not resurrect to 2 because yesterday was won!
+    expect(getActiveStreak(lostDay, '2026-10-10')).toBe(0);
   });
 
   it('evaluates active streak status accurately via getActiveStreak', () => {

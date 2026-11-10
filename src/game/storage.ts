@@ -260,13 +260,32 @@ export function detectYesterdayPlayedWin(todayDateString: string): boolean {
  * Automatically recovers streak if user played/won yesterday before the streak feature was added.
  */
 export function getActiveStreak(stats: PlayerStats, todayDateString: string): number {
+  // If today was already played and lost, streak is definitely 0
+  if (stats.lastCompletedDate === todayDateString && stats.currentStreak === 0) {
+    return 0;
+  }
+
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const dailyRaw = localStorage.getItem(STORAGE_KEYS.DAILY_STATE);
+      if (dailyRaw) {
+        const daily = JSON.parse(dailyRaw);
+        if (daily?.date === todayDateString && daily?.status === 'lost') {
+          return 0;
+        }
+      }
+    }
+  } catch {
+    // Ignore storage parse errors
+  }
+
   const yesterdayWon = detectYesterdayPlayedWin(todayDateString);
 
   // If yesterday was played and won, but stats streak was 0 (or not yet updated):
   if (yesterdayWon) {
-    // If today is already completed and won:
+    // If today is already completed:
     if (stats.lastCompletedDate === todayDateString) {
-      return Math.max(stats.currentStreak, 2);
+      return stats.currentStreak > 0 ? Math.max(stats.currentStreak, 2) : 0;
     }
     // If today is not completed yet:
     return Math.max(stats.currentStreak, 1);
