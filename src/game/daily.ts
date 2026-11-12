@@ -107,6 +107,22 @@ export const HISTORICAL_DAILY_CHARACTERS: Record<number, string> = {
   18: 'grace-gibbons',
   19: 'original-wells',
   20: 'solovar',
+  21: 'killer-frost',
+  22: 'gorilla-grodd',
+  23: 'nora-west-allen',
+  24: 'eddie-thawne',
+  25: 'psych-meta',
+  26: 'music-meister',
+  27: 'oliver-queen',
+  28: 'hunter-zolomon',
+  29: 'cisco-ramon',
+  30: 'hr-wells',
+  31: 'goldface',
+  32: 'ultraviolet',
+  33: 'savitar',
+  34: 'caitlin-snow',
+  35: 'john-diggle',
+  36: 'meena-dhawan',
 };
 
 export function getDailyCharacter(date: Date = new Date()): {
