@@ -23,6 +23,13 @@ import {
   trackShare,
 } from '../../utils/analytics';
 import { searchCharacters } from '../../utils/search';
+import {
+  generateStreakLink,
+  verifyStreakToken,
+  computeStreakSignature,
+  markTokenAsUsed,
+  isTokenAlreadyUsed,
+} from '../../utils/streakToken';
 
 // Setup in-memory localStorage polyfill for Node test environment
 class LocalStorageMock {
@@ -736,6 +743,61 @@ describe('Kristen Kramer Character Specification', () => {
         const found = CHARACTERS.find((c) => c.id === id);
         expect(found, `Day ${day} character (${id}) must exist`).toBeDefined();
       }
+    });
+  });
+
+  describe('Signed Streak Restoration Token Security', () => {
+    it('generates and verifies a valid 48-hour streak restoration token', () => {
+      const link = generateStreakLink(15, false, 48);
+      const url = new URL(link);
+      const streak = parseInt(url.searchParams.get('streak')!, 10);
+      const exp = parseInt(url.searchParams.get('exp')!, 10);
+      const sig = url.searchParams.get('sig')!;
+      const win = url.searchParams.has('win');
+
+      expect(streak).toBe(15);
+      expect(win).toBe(false);
+      expect(exp).toBeGreaterThan(Date.now());
+
+      const result = verifyStreakToken(streak, exp, win, sig);
+      expect(result.valid).toBe(true);
+    });
+
+    it('rejects tampered streak values with invalid_signature', () => {
+      const link = generateStreakLink(10, false, 48);
+      const url = new URL(link);
+      const exp = parseInt(url.searchParams.get('exp')!, 10);
+      const sig = url.searchParams.get('sig')!;
+
+      // Attacker changes streak from 10 to 999 in URL
+      const tamperedResult = verifyStreakToken(999, exp, false, sig);
+      expect(tamperedResult.valid).toBe(false);
+      expect(tamperedResult.reason).toBe('invalid_signature');
+    });
+
+    it('rejects expired tokens', () => {
+      const pastExp = Date.now() - 1000;
+      const sig = computeStreakSignature(12, pastExp, false);
+      const result = verifyStreakToken(12, pastExp, false, sig);
+      expect(result.valid).toBe(false);
+      expect(result.reason).toBe('expired');
+    });
+
+    it('prevents reuse after token signature is marked as used', () => {
+      const link = generateStreakLink(20, true, 48);
+      const url = new URL(link);
+      const streak = parseInt(url.searchParams.get('streak')!, 10);
+      const exp = parseInt(url.searchParams.get('exp')!, 10);
+      const sig = url.searchParams.get('sig')!;
+
+      expect(verifyStreakToken(streak, exp, true, sig).valid).toBe(true);
+
+      markTokenAsUsed(sig);
+      expect(isTokenAlreadyUsed(sig)).toBe(true);
+
+      const secondAttempt = verifyStreakToken(streak, exp, true, sig);
+      expect(secondAttempt.valid).toBe(false);
+      expect(secondAttempt.reason).toBe('already_used');
     });
   });
 

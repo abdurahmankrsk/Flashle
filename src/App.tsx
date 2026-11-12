@@ -31,8 +31,14 @@ import {
   loadStats,
   getActiveStreak,
   recordGameResult,
+  restoreStreak,
 } from './game/storage';
 import type { PlayerStats, DailyGameState } from './game/storage';
+import {
+  verifyStreakToken,
+  markTokenAsUsed,
+  generateStreakLink,
+} from './utils/streakToken';
 import {
   trackPageView,
   trackPuzzleStart,
@@ -41,6 +47,37 @@ import {
 import { Calendar, RefreshCw, Sparkles } from 'lucide-react';
 
 const MAX_GUESSES = 8;
+
+interface ParsedStreakToken {
+  valid: boolean;
+  streak: number;
+  hasWin: boolean;
+  sig: string;
+  reason?: 'expired' | 'invalid_signature' | 'already_used';
+}
+
+function parseUrlStreakToken(): ParsedStreakToken | null {
+  if (typeof window === 'undefined') return null;
+  const params = new URLSearchParams(window.location.search);
+  const streakStr = params.get('streak');
+  const expStr = params.get('exp');
+  const sig = params.get('sig');
+  const hasWin = params.has('win') || params.get('win') === '1';
+
+  if (!streakStr || !expStr || !sig) return null;
+
+  const streakVal = parseInt(streakStr, 10);
+  const expVal = parseInt(expStr, 10);
+  if (isNaN(streakVal) || streakVal < 0 || isNaN(expVal)) return null;
+
+  const verification = verifyStreakToken(streakVal, expVal, hasWin, sig);
+  return {
+    streak: streakVal,
+    hasWin,
+    sig,
+    ...verification,
+  };
+}
 
 export const App: React.FC = () => {
   // Mode: Daily vs Practice vs Archive
@@ -69,8 +106,25 @@ export const App: React.FC = () => {
   // Daily game state
   const [dailyState, setDailyState] = useState<DailyGameState>(() => {
     if (typeof window !== 'undefined') {
+      const token = parseUrlStreakToken();
+      if (token?.valid && token.hasWin) {
+        markTokenAsUsed(token.sig);
+        clearDailyState();
+        const wonState: DailyGameState = {
+          date: dateString,
+          dayNumber,
+          guesses: [dailyInfo.character.id],
+          status: 'won',
+          completedAt: new Date().toISOString(),
+        };
+        saveDailyState(wonState);
+        saveArchiveState(wonState);
+        return wonState;
+      }
+
       const params = new URLSearchParams(window.location.search);
-      if (params.has('reset')) {
+      const loaded = loadDailyState(dateString, dayNumber);
+      if (params.has('reset') || (token?.valid && loaded.status === 'lost')) {
         clearDailyState();
         return {
           date: dateString,
@@ -79,6 +133,7 @@ export const App: React.FC = () => {
           status: 'playing',
         };
       }
+      return loaded;
     }
     return loadDailyState(dateString, dayNumber);
   });
@@ -89,7 +144,18 @@ export const App: React.FC = () => {
   });
 
   // Stats & Streak
-  const [stats, setStats] = useState<PlayerStats>(() => loadStats());
+  const [stats, setStats] = useState<PlayerStats>(() => {
+    if (typeof window !== 'undefined') {
+      const token = parseUrlStreakToken();
+      if (token?.valid) {
+        markTokenAsUsed(token.sig);
+        const loadedDaily = loadDailyState(dateString, dayNumber);
+        const isTodayWon = token.hasWin || loadedDaily.status === 'won';
+        return restoreStreak(token.streak, dateString, isTodayWon);
+      }
+    }
+    return loadStats();
+  });
   const activeStreak = useMemo(() => {
     return getActiveStreak(stats, dateString);
   }, [stats, dateString]);
@@ -101,7 +167,23 @@ export const App: React.FC = () => {
   const [showStats, setShowStats] = useState<boolean>(false);
   const [showArchive, setShowArchive] = useState<boolean>(false);
   const [showEndGame, setShowEndGame] = useState<boolean>(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      const token = parseUrlStreakToken();
+      if (token) {
+        if (token.valid) {
+          return token.hasWin
+            ? `⚡ Streak restored to ${token.streak} & today's puzzle marked won!`
+            : `⚡ Streak restored to ${token.streak}!`;
+        } else if (token.reason === 'expired') {
+          return '⚠️ This restore link has expired.';
+        } else if (token.reason === 'already_used') {
+          return '⚠️ This restore link has already been used.';
+        }
+      }
+    }
+    return null;
+  });
   const [newestGuessId, setNewestGuessId] = useState<string | undefined>(undefined);
   const [screenReaderAnnouncement, setScreenReaderAnnouncement] = useState<string>('');
 
@@ -166,22 +248,31 @@ export const App: React.FC = () => {
     setToastMessage("Today's game has been reset!");
   }, [dateString, dayNumber]);
 
-  // Clean up URL query parameters (?reset)
+  // Clean up URL query parameters (?streak=X, ?exp=X, ?sig=X, ?win, ?reset)
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      if (params.has('reset')) {
-        params.delete('reset');
+      const toDelete = ['streak', 'exp', 'sig', 'win', 'reset'];
+      let changed = false;
+      for (const param of toDelete) {
+        if (params.has(param)) {
+          params.delete(param);
+          changed = true;
+        }
+      }
+      if (changed) {
         const newSearch = params.toString() ? `?${params.toString()}` : '';
         window.history.replaceState({}, document.title, `${window.location.pathname}${newSearch}`);
       }
     }
   }, []);
 
-  // Expose on window for easy browser console reset: window.resetDaily()
+  // Expose on window for easy browser console reset & streak generation
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).resetDaily = handleResetDaily;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).generateStreakLink = generateStreakLink;
   }, [handleResetDaily]);
 
   // Sync daily state to localStorage
