@@ -108,7 +108,6 @@ export const App: React.FC = () => {
     if (typeof window !== 'undefined') {
       const token = parseUrlStreakToken();
       if (token?.valid && token.hasWin) {
-        markTokenAsUsed(token.sig);
         clearDailyState();
         const wonState: DailyGameState = {
           date: dateString,
@@ -148,7 +147,6 @@ export const App: React.FC = () => {
     if (typeof window !== 'undefined') {
       const token = parseUrlStreakToken();
       if (token?.valid) {
-        markTokenAsUsed(token.sig);
         const loadedDaily = loadDailyState(dateString, dayNumber);
         const isTodayWon = token.hasWin || loadedDaily.status === 'won';
         return restoreStreak(token.streak, dateString, isTodayWon);
@@ -248,9 +246,14 @@ export const App: React.FC = () => {
     setToastMessage("Today's game has been reset!");
   }, [dateString, dayNumber]);
 
-  // Clean up URL query parameters (?streak=X, ?exp=X, ?sig=X, ?win, ?reset)
+  // Clean up URL query parameters (?streak=X, ?exp=X, ?sig=X, ?win, ?reset) and mark token as used
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      const token = parseUrlStreakToken();
+      if (token?.valid) {
+        markTokenAsUsed(token.sig);
+      }
+
       const params = new URLSearchParams(window.location.search);
       const toDelete = ['streak', 'exp', 'sig', 'win', 'reset'];
       let changed = false;
