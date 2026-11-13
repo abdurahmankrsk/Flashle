@@ -718,6 +718,52 @@ describe('Kristen Kramer Character Specification', () => {
       expect(byLastName.length).toBeGreaterThan(0);
       expect(byLastName[0].character.id).toBe('tracy-brand');
     });
+
+    it('validates Earth-X villains entries, attributes, and comparisons', () => {
+      const darkArrow = CHARACTERS.find((c) => c.id === 'dark-arrow');
+      const overgirl = CHARACTERS.find((c) => c.id === 'overgirl');
+      const prometheusX = CHARACTERS.find((c) => c.id === 'prometheus-x');
+      const sirenX = CHARACTERS.find((c) => c.id === 'siren-x');
+      const metalloX = CHARACTERS.find((c) => c.id === 'metallo-x');
+      const blitzkrieg = CHARACTERS.find((c) => c.id === 'blitzkrieg');
+
+      expect(darkArrow).toBeDefined();
+      expect(darkArrow?.actor).toBe('Stephen Amell');
+      expect(darkArrow?.earth).toBe('Earth-X');
+      expect(darkArrow?.alignment).toBe('Villain');
+      expect(darkArrow?.teams).toContain('New Reich');
+
+      expect(overgirl).toBeDefined();
+      expect(overgirl?.actor).toBe('Melissa Benoist');
+      expect(overgirl?.species).toBe('Kryptonian');
+      expect(overgirl?.earth).toBe('Earth-X');
+      expect(overgirl?.alignment).toBe('Villain');
+
+      expect(prometheusX).toBeDefined();
+      expect(prometheusX?.actor).toBe('Colin Donnell');
+      expect(prometheusX?.earth).toBe('Earth-X');
+
+      expect(sirenX).toBeDefined();
+      expect(sirenX?.actor).toBe('Katie Cassidy');
+      expect(sirenX?.earth).toBe('Earth-X');
+
+      expect(metalloX).toBeDefined();
+      expect(metalloX?.actor).toBe('Frederick Schmidt');
+      expect(metalloX?.earth).toBe('Earth-X');
+
+      expect(blitzkrieg).toBeDefined();
+      expect(blitzkrieg?.speedster).toBe(true);
+      expect(blitzkrieg?.earth).toBe('Earth-X');
+
+      // Earth-X vs Earth-X comparison
+      const sameEarthComp = compareGuess(darkArrow!, overgirl!);
+      expect(sameEarthComp.earth.status).toBe('correct');
+
+      // Earth-X vs Earth-1 comparison
+      const barry = CHARACTERS.find((c) => c.id === 'barry-allen')!;
+      const diffEarthComp = compareGuess(darkArrow!, barry);
+      expect(diffEarthComp.earth.status).toBe('incorrect');
+    });
   });
 
   describe('Historical Daily Puzzles Stability & Day 19 Verification', () => {

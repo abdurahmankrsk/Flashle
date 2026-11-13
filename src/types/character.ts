@@ -19,6 +19,7 @@ export type EarthOrigin =
   | 'Earth-19' 
   | 'Earth-38' 
   | 'Earth-221'
+  | 'Earth-X'
   | 'Multiverse / Other';
 
 export type Difficulty = 'Easy' | 'Medium' | 'Hard' | 'Very Hard';

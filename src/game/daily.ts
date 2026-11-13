@@ -123,6 +123,7 @@ export const HISTORICAL_DAILY_CHARACTERS: Record<number, string> = {
   34: 'caitlin-snow',
   35: 'john-diggle',
   36: 'meena-dhawan',
+  37: 'nora-allen-speed-force',
 };
 
 export function getDailyCharacter(date: Date = new Date()): {
