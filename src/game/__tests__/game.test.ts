@@ -719,6 +719,36 @@ describe('Kristen Kramer Character Specification', () => {
       expect(byLastName[0].character.id).toBe('tracy-brand');
     });
 
+    it('finds Sara Lance when searching "sara", "white canary", or "canary"', () => {
+      const byHeroName = searchCharacters(CHARACTERS, 'white canary');
+      expect(byHeroName.length).toBeGreaterThan(0);
+      expect(byHeroName[0].character.id).toBe('sara-lance');
+      expect(byHeroName[0].matchedAlias).toBe('White Canary');
+
+      const byFirstName = searchCharacters(CHARACTERS, 'sara');
+      expect(byFirstName.length).toBeGreaterThan(0);
+      expect(byFirstName[0].character.id).toBe('sara-lance');
+    });
+
+    it('includes Sara Lance with accurate Legends and League attributes', () => {
+      const sara = CHARACTERS.find((c) => c.id === 'sara-lance');
+      expect(sara).toBeDefined();
+      expect(sara?.name).toBe('Sara Lance');
+      expect(sara?.aliases).toContain('White Canary');
+      expect(sara?.aliases).toContain('The Canary');
+      expect(sara?.actor).toBe('Caity Lotz');
+      expect(sara?.species).toBe('Human');
+      expect(sara?.alignment).toBe('Hero');
+      expect(sara?.power).toBe('Martial Arts / Peak Combat');
+      expect(sara?.speedster).toBe(false);
+      expect(sara?.earth).toBe('Earth-1 / Prime');
+      expect(sara?.firstSeason).toBe(3);
+      expect(sara?.seasons).toEqual([3, 4, 6]);
+      expect(sara?.teams).toContain('Legends of Tomorrow');
+      expect(sara?.teams).toContain('Justice League');
+      expect(sara?.difficulty).toBe('Medium');
+    });
+
     it('validates Earth-X villains entries, attributes, and comparisons', () => {
       const darkArrow = CHARACTERS.find((c) => c.id === 'dark-arrow');
       const overgirl = CHARACTERS.find((c) => c.id === 'overgirl');

@@ -1019,6 +1019,24 @@ export const CHARACTERS: FlashCharacter[] = [
     role: "Earth-38 Superhero / Daily Planet Reporter / Man of Steel",
     difficulty: "Medium",
   },
+  {
+    id: "sara-lance",
+    name: "Sara Lance",
+    aliases: ["White Canary", "The Canary", "Captain Lance", "Ta-er al-Sahfer"],
+    actor: "Caity Lotz",
+    gender: "Female",
+    species: "Human",
+    alignment: "Hero",
+    power: "Martial Arts / Peak Combat",
+    speedster: false,
+    firstSeason: 3,
+    seasons: [3, 4, 6],
+    earth: "Earth-1 / Prime",
+    teams: ["Legends of Tomorrow", "Justice League", "League of Assassins"],
+    quote: "Pain and I came to a little understanding a few years back.",
+    role: "Captain of the Waverider / White Canary / League of Assassins Veteran",
+    difficulty: "Medium",
+  },
 
   // --- HARD DIFFICULTY: Obscure Metahumans, Niche Villains, Deep Lore ---
   {
