@@ -1037,6 +1037,24 @@ export const CHARACTERS: FlashCharacter[] = [
     role: "Captain of the Waverider / White Canary / League of Assassins Veteran",
     difficulty: "Medium",
   },
+  {
+    id: "jefferson-pierce",
+    name: "Jefferson Pierce",
+    aliases: ["Black Lightning"],
+    actor: "Cress Williams",
+    gender: "Male",
+    species: "Metahuman",
+    alignment: "Hero",
+    power: "Electrokinesis",
+    speedster: false,
+    firstSeason: 6,
+    seasons: [6, 8],
+    earth: "Earth-1 / Prime",
+    teams: ["Justice League", "The Outsiders"],
+    quote: "Where's the future? Right here. Whose life is this? Mine. What are you gonna do with it? Live it by any means necessary.",
+    role: "Freeland Superhero / Justice League Founder / Master of Electricity",
+    difficulty: "Medium",
+  },
 
   // --- HARD DIFFICULTY: Obscure Metahumans, Niche Villains, Deep Lore ---
   {

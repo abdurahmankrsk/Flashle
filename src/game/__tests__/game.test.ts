@@ -749,6 +749,35 @@ describe('Kristen Kramer Character Specification', () => {
       expect(sara?.difficulty).toBe('Medium');
     });
 
+    it('finds Jefferson Pierce when searching "black lightning" or "pierce"', () => {
+      const byHeroName = searchCharacters(CHARACTERS, 'black lightning');
+      expect(byHeroName.length).toBeGreaterThan(0);
+      expect(byHeroName[0].character.id).toBe('jefferson-pierce');
+      expect(byHeroName[0].matchedAlias).toBe('Black Lightning');
+
+      const byLastName = searchCharacters(CHARACTERS, 'pierce');
+      expect(byLastName.length).toBeGreaterThan(0);
+      expect(byLastName[0].character.id).toBe('jefferson-pierce');
+    });
+
+    it('includes Jefferson Pierce with accurate Electrokinesis and Justice League attributes', () => {
+      const jeff = CHARACTERS.find((c) => c.id === 'jefferson-pierce');
+      expect(jeff).toBeDefined();
+      expect(jeff?.name).toBe('Jefferson Pierce');
+      expect(jeff?.aliases).toContain('Black Lightning');
+      expect(jeff?.actor).toBe('Cress Williams');
+      expect(jeff?.species).toBe('Metahuman');
+      expect(jeff?.alignment).toBe('Hero');
+      expect(jeff?.power).toBe('Electrokinesis');
+      expect(jeff?.speedster).toBe(false);
+      expect(jeff?.earth).toBe('Earth-1 / Prime');
+      expect(jeff?.firstSeason).toBe(6);
+      expect(jeff?.seasons).toEqual([6, 8]);
+      expect(jeff?.teams).toContain('Justice League');
+      expect(jeff?.teams).toContain('The Outsiders');
+      expect(jeff?.difficulty).toBe('Medium');
+    });
+
     it('validates Earth-X villains entries, attributes, and comparisons', () => {
       const darkArrow = CHARACTERS.find((c) => c.id === 'dark-arrow');
       const overgirl = CHARACTERS.find((c) => c.id === 'overgirl');
