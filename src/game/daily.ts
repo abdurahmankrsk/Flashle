@@ -126,6 +126,7 @@ export const HISTORICAL_DAILY_CHARACTERS: Record<number, string> = {
   37: 'nora-allen-speed-force',
   38: 'sand-demon',
   39: 'peek-a-boo',
+  40: 'gorilla-grodd',
 };
 
 export function getDailyCharacter(date: Date = new Date()): {
