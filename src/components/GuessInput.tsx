@@ -239,7 +239,7 @@ export const GuessInput: React.FC<GuessInputProps> = ({
                         <span className="font-tech font-bold text-white text-base sm:text-lg tracking-wide break-words">
                           {char.name}
                         </span>
-                        {subtitleAlias && (
+                        {subtitleAlias && !char.name.toLowerCase().includes(subtitleAlias.toLowerCase()) && (
                           <span className="text-xs sm:text-sm text-[#fbbf24] font-tech font-semibold">
                             ({subtitleAlias})
                           </span>

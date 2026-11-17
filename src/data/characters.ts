@@ -913,8 +913,8 @@ export const CHARACTERS: FlashCharacter[] = [
   },
   {
     id: "red-death",
-    name: "Ryan Wilder (Red Death)",
-    aliases: ["Red Death", "The Red Death", "Ryan Wilder", "Evil Batwoman"],
+    name: "Red Death",
+    aliases: ["Ryan Wilder", "The Red Death"],
     actor: "Javicia Leslie",
     gender: "Female",
     species: "Metahuman",
@@ -931,8 +931,8 @@ export const CHARACTERS: FlashCharacter[] = [
   },
   {
     id: "ryan-wilder",
-    name: "Ryan Wilder (Batwoman)",
-    aliases: ["Batwoman", "Ryan Wilder"],
+    name: "Ryan Wilder",
+    aliases: ["Batwoman"],
     actor: "Javicia Leslie",
     gender: "Female",
     species: "Human",
@@ -949,8 +949,8 @@ export const CHARACTERS: FlashCharacter[] = [
   },
   {
     id: "kate-kane",
-    name: "Kate Kane (Batwoman)",
-    aliases: ["Batwoman", "Kate Kane"],
+    name: "Kate Kane",
+    aliases: ["Batwoman"],
     actor: "Ruby Rose",
     gender: "Female",
     species: "Human",
