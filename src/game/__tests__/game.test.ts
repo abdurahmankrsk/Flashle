@@ -528,7 +528,7 @@ describe('Kristen Kramer Character Specification', () => {
     it('includes Red Death as a Season 9 speedster villain from Multiverse', () => {
       const redDeath = CHARACTERS.find((c) => c.id === 'red-death');
       expect(redDeath).toBeDefined();
-      expect(redDeath?.name).toBe('Ryan Wilder (Red Death)');
+      expect(redDeath?.name).toBe('Ryan Wilder');
       expect(redDeath?.aliases).toContain('Red Death');
       expect(redDeath?.actor).toBe('Javicia Leslie');
       expect(redDeath?.speedster).toBe(true);
@@ -544,7 +544,7 @@ describe('Kristen Kramer Character Specification', () => {
     it('validates Kate Kane (Batwoman) and Ryan Wilder (Batwoman) entries', () => {
       const kate = CHARACTERS.find((c) => c.id === 'kate-kane');
       expect(kate).toBeDefined();
-      expect(kate?.name).toBe('Kate Kane (Batwoman)');
+      expect(kate?.name).toBe('Kate Kane');
       expect(kate?.actor).toBe('Ruby Rose');
       expect(kate?.species).toBe('Human');
       expect(kate?.alignment).toBe('Hero');
@@ -553,7 +553,7 @@ describe('Kristen Kramer Character Specification', () => {
 
       const ryan = CHARACTERS.find((c) => c.id === 'ryan-wilder');
       expect(ryan).toBeDefined();
-      expect(ryan?.name).toBe('Ryan Wilder (Batwoman)');
+      expect(ryan?.name).toBe('Ryan Wilder');
       expect(ryan?.actor).toBe('Javicia Leslie');
       expect(ryan?.species).toBe('Human');
       expect(ryan?.alignment).toBe('Hero');
