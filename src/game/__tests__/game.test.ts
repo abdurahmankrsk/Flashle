@@ -505,14 +505,22 @@ describe('Kristen Kramer Character Specification', () => {
       expect(byTitle[0].character.id).toBe('kristen-kramer');
     });
 
-    it('finds Red Death when searching "red death" or "ryan wilder"', () => {
+    it('finds Red Death and Batwoman when searching "red death", "batwoman", or "ryan wilder"', () => {
       const byVillainName = searchCharacters(CHARACTERS, 'red death');
       expect(byVillainName.length).toBeGreaterThan(0);
       expect(byVillainName[0].character.id).toBe('red-death');
 
       const byRealName = searchCharacters(CHARACTERS, 'ryan wilder');
       expect(byRealName.length).toBeGreaterThan(0);
-      expect(byRealName[0].character.id).toBe('red-death');
+      const ryanIds = byRealName.map((m) => m.character.id);
+      expect(ryanIds).toContain('red-death');
+      expect(ryanIds).toContain('ryan-wilder');
+
+      const byBatwoman = searchCharacters(CHARACTERS, 'batwoman');
+      expect(byBatwoman.length).toBeGreaterThan(0);
+      const batwomanIds = byBatwoman.map((m) => m.character.id);
+      expect(batwomanIds).toContain('kate-kane');
+      expect(batwomanIds).toContain('ryan-wilder');
     });
   });
 
@@ -520,7 +528,7 @@ describe('Kristen Kramer Character Specification', () => {
     it('includes Red Death as a Season 9 speedster villain from Multiverse', () => {
       const redDeath = CHARACTERS.find((c) => c.id === 'red-death');
       expect(redDeath).toBeDefined();
-      expect(redDeath?.name).toBe('Ryan Wilder');
+      expect(redDeath?.name).toContain('Ryan Wilder');
       expect(redDeath?.aliases).toContain('Red Death');
       expect(redDeath?.actor).toBe('Javicia Leslie');
       expect(redDeath?.speedster).toBe(true);
@@ -531,6 +539,24 @@ describe('Kristen Kramer Character Specification', () => {
       expect(redDeath?.firstSeason).toBe(9);
       expect(redDeath?.seasons).toEqual([9]);
       expect(redDeath?.teams).toContain('Rogues');
+    });
+
+    it('validates Kate Kane (Batwoman) and Ryan Wilder (Batwoman) entries', () => {
+      const kate = CHARACTERS.find((c) => c.id === 'kate-kane');
+      expect(kate).toBeDefined();
+      expect(kate?.actor).toBe('Ruby Rose');
+      expect(kate?.species).toBe('Human');
+      expect(kate?.alignment).toBe('Hero');
+      expect(kate?.earth).toBe('Earth-1 / Prime');
+      expect(kate?.aliases).toContain('Batwoman');
+
+      const ryan = CHARACTERS.find((c) => c.id === 'ryan-wilder');
+      expect(ryan).toBeDefined();
+      expect(ryan?.actor).toBe('Javicia Leslie');
+      expect(ryan?.species).toBe('Human');
+      expect(ryan?.alignment).toBe('Hero');
+      expect(ryan?.earth).toBe('Earth-1 / Prime');
+      expect(ryan?.aliases).toContain('Batwoman');
     });
   });
 
