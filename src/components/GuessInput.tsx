@@ -12,6 +12,14 @@ interface GuessInputProps {
   isWon?: boolean;
 }
 
+const isDuplicateAlias = (name: string, alias: string): boolean => {
+  const clean = (s: string) => s.toLowerCase().replace(/\bthe\b/g, '').replace(/[^a-z0-9]/g, '');
+  const normName = clean(name);
+  const normAlias = clean(alias);
+  if (!normAlias) return true;
+  return normName.includes(normAlias) || normAlias.includes(normName);
+};
+
 export const GuessInput: React.FC<GuessInputProps> = ({
   guessedCharacterIds,
   disabled,
@@ -239,7 +247,7 @@ export const GuessInput: React.FC<GuessInputProps> = ({
                         <span className="font-tech font-bold text-white text-base sm:text-lg tracking-wide break-words">
                           {char.name}
                         </span>
-                        {subtitleAlias && !char.name.toLowerCase().includes(subtitleAlias.toLowerCase()) && (
+                        {subtitleAlias && !isDuplicateAlias(char.name, subtitleAlias) && (
                           <span className="text-xs sm:text-sm text-[#fbbf24] font-tech font-semibold">
                             ({subtitleAlias})
                           </span>
