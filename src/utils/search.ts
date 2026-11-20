@@ -19,6 +19,8 @@ export function cleanText(str: string): string {
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/\./g, '')
     .replace(/[-_'"`]/g, ' ')
+    .replace(/\bdoctor\b/g, 'dr')
+    .replace(/\bprofessor\b/g, 'prof')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -31,6 +33,8 @@ export function compactText(str: string): string {
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\bdoctor\b/g, 'dr')
+    .replace(/\bprofessor\b/g, 'prof')
     .replace(/[^a-z0-9]/g, '');
 }
 

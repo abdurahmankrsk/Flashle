@@ -1528,7 +1528,7 @@ export const CHARACTERS: FlashCharacter[] = [
   {
     id: "dr-light-earth-2",
     name: "Dr. Light",
-    aliases: ["Linda Park of Earth-2"],
+    aliases: ["Doctor Light", "Linda Park of Earth-2"],
     actor: "Malese Jow",
     gender: "Female",
     species: "Metahuman",

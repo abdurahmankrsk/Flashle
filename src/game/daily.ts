@@ -130,6 +130,7 @@ export const HISTORICAL_DAILY_CHARACTERS: Record<number, string> = {
   41: 'allegra-garcia',
   42: 'abra-kadabra',
   43: 'nash-wells',
+  44: 'dr-light-earth-2',
 };
 
 export function getDailyCharacter(date: Date = new Date()): {

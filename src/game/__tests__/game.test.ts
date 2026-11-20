@@ -522,6 +522,25 @@ describe('Kristen Kramer Character Specification', () => {
       expect(batwomanIds).toContain('kate-kane');
       expect(batwomanIds).toContain('ryan-wilder');
     });
+
+    it('seamlessly matches honorific variants like "doctor light", "doctor snow", and "prof stein"', () => {
+      const docLight = searchCharacters(CHARACTERS, 'doctor light');
+      expect(docLight.length).toBeGreaterThan(0);
+      expect(docLight[0].character.id).toBe('dr-light-earth-2');
+
+      const drLight = searchCharacters(CHARACTERS, 'dr light');
+      expect(drLight.length).toBeGreaterThan(0);
+      expect(drLight[0].character.id).toBe('dr-light-earth-2');
+
+      const docSnow = searchCharacters(CHARACTERS, 'doctor snow');
+      expect(docSnow.length).toBeGreaterThan(0);
+      const snowIds = docSnow.map((m) => m.character.id);
+      expect(snowIds).toContain('caitlin-snow');
+
+      const profStein = searchCharacters(CHARACTERS, 'prof stein');
+      expect(profStein.length).toBeGreaterThan(0);
+      expect(profStein[0].character.id).toBe('martin-stein');
+    });
   });
 
   describe('Red Death (Ryan Wilder) Character Specification', () => {
