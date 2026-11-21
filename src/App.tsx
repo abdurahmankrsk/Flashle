@@ -782,6 +782,7 @@ export const App: React.FC = () => {
         dayNumber={dayNumber}
         comparisons={comparisons}
         isWon={dailyState.status === 'won'}
+        difficulty={dailyInfo.difficulty}
         onToast={(msg) => setToastMessage(msg)}
       />
 

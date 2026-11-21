@@ -13,8 +13,8 @@
 ## ⚡ Features
 
 - **Daily Mystery Character**: Everyone receives the same mystery character on any given calendar day (synced to midnight daily).
-- **Unlimited Practice Mode**: Practice anytime with random characters from the 62-character roster.
-- **62 Canonical CW Characters**: Deeply researched roster covering heroes, Rogues, speedsters, Harrison Wells variants, CCPD officers, and multiversal allies across all 9 seasons.
+- **Unlimited Practice Mode**: Practice anytime with random characters from the 115-character roster.
+- **115 Canonical CW Characters**: Deeply researched roster covering heroes, Rogues, speedsters, Harrison Wells variants, CCPD officers, and multiversal allies across all 9 seasons.
 - **Attribute Comparison Engine**:
   - **Character**: High-resolution face portrait & full character name
   - **Gender**: Male / Female / Other
@@ -42,7 +42,7 @@
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
 - **Icons**: [Lucide React](https://lucide.dev/)
 - **FX**: [Canvas Confetti](https://www.npmjs.com/package/canvas-confetti)
-- **Testing**: [Vitest](https://vitest.dev/) (19 unit & integration tests)
+- **Testing**: [Vitest](https://vitest.dev/) (64 unit & integration tests)
 - **Linter**: [Oxlint](https://oxc.rs/)
 
 ---

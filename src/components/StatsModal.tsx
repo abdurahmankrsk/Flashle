@@ -18,6 +18,7 @@ interface StatsModalProps {
   dayNumber: number;
   comparisons: GuessComparison[];
   isWon: boolean;
+  difficulty?: string;
   onToast: (msg: string) => void;
 }
 
@@ -31,6 +32,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
   dayNumber,
   comparisons,
   isWon,
+  difficulty,
   onToast,
 }) => {
   const modalRef = useModalAccessibility(isOpen, onClose);
@@ -52,7 +54,7 @@ export const StatsModal: React.FC<StatsModalProps> = ({
     : stats.currentStreak;
 
   const handleShare = async () => {
-    const text = generateShareText(dayNumber, comparisons, isWon);
+    const text = generateShareText(dayNumber, comparisons, isWon, 8, difficulty, 'daily');
     const result = await shareResult(text);
     trackShare('daily', result.method, isWon);
 
