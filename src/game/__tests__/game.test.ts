@@ -224,6 +224,13 @@ describe('Daily Puzzle Determinism & Archive Mode', () => {
     expect(past.character.name.length).toBeGreaterThan(0);
   });
 
+  it('pins Day 46 canonically to Hunter Zolomon', () => {
+    expect(HISTORICAL_DAILY_CHARACTERS[46]).toBe('hunter-zolomon');
+    const puzzle = getDailyCharacter(new Date('2026-11-22T12:00:00Z'));
+    expect(puzzle.dayNumber).toBe(46);
+    expect(puzzle.character.id).toBe('hunter-zolomon');
+  });
+
   it('generates reverse chronological historical puzzle list up to current date', () => {
     const currentDate = new Date('2026-10-10T12:00:00Z');
     const puzzles = getHistoricalPuzzles(currentDate);
@@ -455,6 +462,24 @@ describe('Share Results Formatter', () => {
     expect(lossShare).not.toContain('Barry');
     expect(lossShare).toContain('Ran out of tachyons! 🥀');
     expect(lossShare).toContain('Think you know The Flash?');
+  });
+
+  it('formats archive mode share text with archive header', () => {
+    const barry = CHARACTERS.find((c) => c.id === 'barry-allen')!;
+    const comp = compareGuess(barry, barry);
+    const archiveShare = generateShareText(25, [comp], true, 8, 'Medium', 'archive');
+
+    expect(archiveShare).toContain('⚡ Flashle Archive #0025 [Medium] — 1/8');
+    expect(archiveShare).toContain('Tachyons synchronized in 1 guess! ⚡');
+  });
+
+  it('formats practice mode share text with practice header', () => {
+    const barry = CHARACTERS.find((c) => c.id === 'barry-allen')!;
+    const comp = compareGuess(barry, barry);
+    const practiceShare = generateShareText(0, [comp], true, 8, 'Hard', 'practice');
+
+    expect(practiceShare).toContain('⚡ Flashle Practice [Hard] — 1/8');
+    expect(practiceShare).toContain('Tachyons synchronized in 1 guess! ⚡');
   });
 });
 

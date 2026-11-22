@@ -35,7 +35,7 @@ An authentic, laser-focused daily deductive guessing game dedicated strictly to 
 
 ## Evidence on Hand
 - Complete 115-character database with high-resolution portraits, aliases, actor names, and verified canon attributes in [`src/data/characters.ts`](file:///c:/Users/abdur/OneDrive/Desktop/Abdurahman/Flashle/src/data/characters.ts).
-- Working comparison engine, daily seed generation, and test suite with 64 passing tests in [`src/game/`](file:///c:/Users/abdur/OneDrive/Desktop/Abdurahman/Flashle/src/game/).
+- Working comparison engine, daily seed generation, and test suite with 67 passing tests in [`src/game/`](file:///c:/Users/abdur/OneDrive/Desktop/Abdurahman/Flashle/src/game/).
 - Production deployment on Vercel at [flashle-game.vercel.app](https://flashle-game.vercel.app/).
 
 ## Product Principles

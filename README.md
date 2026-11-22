@@ -42,7 +42,7 @@
 - **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
 - **Icons**: [Lucide React](https://lucide.dev/)
 - **FX**: [Canvas Confetti](https://www.npmjs.com/package/canvas-confetti)
-- **Testing**: [Vitest](https://vitest.dev/) (64 unit & integration tests)
+- **Testing**: [Vitest](https://vitest.dev/) (67 unit & integration tests)
 - **Linter**: [Oxlint](https://oxc.rs/)
 
 ---

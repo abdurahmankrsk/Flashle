@@ -15,10 +15,12 @@ interface EndGameModalProps {
   secret: FlashCharacter;
   comparisons: GuessComparison[];
   dayNumber: number;
-  isDaily: boolean;
+  mode?: 'daily' | 'practice' | 'archive';
+  isDaily?: boolean;
   timeUntilNext: string;
   onSwitchToPractice: () => void;
   onNewPracticeGame: () => void;
+  onOpenArchive?: () => void;
   onToast: (msg: string) => void;
 }
 
@@ -29,13 +31,16 @@ export const EndGameModal: React.FC<EndGameModalProps> = ({
   secret,
   comparisons,
   dayNumber,
-  isDaily,
+  mode,
+  isDaily = true,
   timeUntilNext,
   onSwitchToPractice,
   onNewPracticeGame,
+  onOpenArchive,
   onToast,
 }) => {
   const modalRef = useModalAccessibility(isOpen, onClose);
+  const currentMode = mode ?? (isDaily ? 'daily' : 'practice');
 
   useEffect(() => {
     if (isOpen && isWon) {
@@ -61,10 +66,10 @@ export const EndGameModal: React.FC<EndGameModalProps> = ({
       isWon,
       8,
       secret.difficulty,
-      isDaily ? 'daily' : 'practice'
+      currentMode
     );
     const result = await shareResult(shareText);
-    trackShare(isDaily ? 'daily' : 'practice', result.method, isWon);
+    trackShare(currentMode, result.method, isWon);
 
     if (result.success) {
       onToast(result.method === 'native' ? 'Result shared!' : 'Results copied to clipboard!');
@@ -198,11 +203,20 @@ export const EndGameModal: React.FC<EndGameModalProps> = ({
 
         {/* Daily Countdown & Sharing Controls */}
         <div className="space-y-2.5 sm:space-y-3">
-          {isDaily && (
+          {currentMode === 'daily' && (
             <div className="flex items-center justify-between p-2.5 sm:p-3 rounded-[4px] bg-[#10121d] border border-[#252b3e] text-xs font-tech font-semibold uppercase tracking-wider">
               <span className="text-gray-400">Next Flashle in</span>
               <span className="font-mono font-bold text-sm text-[#fbbf24] tracking-widest">
                 {timeUntilNext}
+              </span>
+            </div>
+          )}
+
+          {currentMode === 'archive' && (
+            <div className="flex items-center justify-between p-2.5 sm:p-3 rounded-[4px] bg-[#10121d] border border-[#252b3e] text-xs font-tech font-semibold uppercase tracking-wider">
+              <span className="text-gray-400">Archive Puzzle</span>
+              <span className="font-mono font-bold text-sm text-[#ef4444] tracking-widest">
+                DAY #{dayNumber}
               </span>
             </div>
           )}
@@ -216,7 +230,7 @@ export const EndGameModal: React.FC<EndGameModalProps> = ({
               <span>Share Result</span>
             </button>
 
-            {isDaily ? (
+            {currentMode === 'daily' ? (
               <button
                 onClick={() => {
                   onClose();
@@ -225,6 +239,20 @@ export const EndGameModal: React.FC<EndGameModalProps> = ({
                 className="py-2.5 sm:py-3 px-4 bg-[#191c28] hover:bg-[#232839] text-gray-200 font-tech font-bold uppercase tracking-wider rounded-[4px] flex items-center justify-center gap-2 border border-[#2e344a] transition-colors text-xs sm:text-sm cursor-pointer"
               >
                 <span>Practice Mode</span>
+              </button>
+            ) : currentMode === 'archive' ? (
+              <button
+                onClick={() => {
+                  onClose();
+                  if (onOpenArchive) {
+                    onOpenArchive();
+                  } else {
+                    onSwitchToPractice();
+                  }
+                }}
+                className="py-2.5 sm:py-3 px-4 bg-[#191c28] hover:bg-[#232839] text-gray-200 font-tech font-bold uppercase tracking-wider rounded-[4px] flex items-center justify-center gap-2 border border-[#2e344a] transition-colors text-xs sm:text-sm cursor-pointer"
+              >
+                <span>Browse Archive</span>
               </button>
             ) : (
               <button

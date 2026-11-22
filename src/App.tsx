@@ -757,6 +757,7 @@ export const App: React.FC = () => {
         secret={currentSecret}
         comparisons={comparisons}
         dayNumber={currentDayNumber || dayNumber}
+        mode={activeMode}
         isDaily={activeMode === 'daily'}
         timeUntilNext={timeUntilNext}
         onSwitchToPractice={() => {
@@ -764,6 +765,7 @@ export const App: React.FC = () => {
           handleNewPracticeGame();
         }}
         onNewPracticeGame={handleNewPracticeGame}
+        onOpenArchive={() => setShowArchive(true)}
         onToast={(msg) => setToastMessage(msg)}
       />
 

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { CHARACTERS } from '../data/characters';
 import type { FlashCharacter } from '../types/character';
@@ -24,7 +24,24 @@ export const GuessInput: React.FC<GuessInputProps> = ({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const isSubmittingRef = useRef(false);
+
+  // Close suggestions when clicking or tapping outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, []);
 
   // Filter candidates using smart ranked search
   const searchResults = useMemo(() => {
@@ -111,7 +128,7 @@ export const GuessInput: React.FC<GuessInputProps> = ({
       </div>
 
       {/* Input container */}
-      <div className="relative w-full">
+      <div ref={containerRef} className="relative w-full">
         <div
           className={`flex items-center bg-[#0d0f17]/95 border-2 rounded-[8px] transition-all duration-150 shadow-xl min-h-[50px] sm:min-h-[54px] ${
             disabled

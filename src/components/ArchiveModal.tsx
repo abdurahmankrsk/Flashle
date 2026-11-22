@@ -20,7 +20,10 @@ export const ArchiveModal: React.FC<ArchiveModalProps> = ({
   activeDateString,
 }) => {
   const modalRef = useModalAccessibility(isOpen, onClose);
-  const puzzles = useMemo(() => getHistoricalPuzzles(), []);
+  const puzzles = useMemo(() => {
+    if (!isOpen) return [];
+    return getHistoricalPuzzles();
+  }, [isOpen]);
   const storedStates = useMemo(() => {
     if (!isOpen) return {};
     return getAllStoredGameStates();
@@ -101,8 +104,17 @@ export const ArchiveModal: React.FC<ArchiveModalProps> = ({
             return (
               <div
                 key={puzzle.dateString}
+                role="button"
+                tabIndex={0}
+                aria-label={`Select Flashle #${formattedDay}, ${puzzle.formattedDate}`}
                 onClick={() => onSelectPuzzle(puzzle)}
-                className={`p-3 rounded-[6px] border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSelectPuzzle(puzzle);
+                  }
+                }}
+                className={`p-3 rounded-[6px] border transition-all cursor-pointer flex items-center justify-between gap-3 focus:outline-none focus:ring-2 focus:ring-[#ef4444] ${
                   isCurrentlyPlaying
                     ? 'bg-[#1a1f33] border-[#dc2626] ring-1 ring-[#dc2626]/50 shadow-md'
                     : 'bg-[#11131e] border-[#22273b] hover:bg-[#161a2b] hover:border-[#384163]'
