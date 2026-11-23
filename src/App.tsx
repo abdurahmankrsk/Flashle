@@ -328,6 +328,13 @@ export const App: React.FC = () => {
       .map((char) => compareGuess(char, currentSecret));
   }, [currentGuesses, currentSecret]);
 
+  const dailyComparisons: GuessComparison[] = useMemo(() => {
+    return dailyState.guesses
+      .map((id) => CHARACTERS.find((c) => c.id === id))
+      .filter((c): c is FlashCharacter => !!c)
+      .map((char) => compareGuess(char, dailyInfo.character));
+  }, [dailyState.guesses, dailyInfo.character]);
+
   // Handle closing Toast
   const handleCloseToast = useCallback(() => {
     setToastMessage(null);
@@ -782,7 +789,7 @@ export const App: React.FC = () => {
         timeUntilNext={timeUntilNext}
         isGameFinished={dailyState.status !== 'playing'}
         dayNumber={dayNumber}
-        comparisons={comparisons}
+        comparisons={dailyComparisons}
         isWon={dailyState.status === 'won'}
         difficulty={dailyInfo.difficulty}
         onToast={(msg) => setToastMessage(msg)}

@@ -219,7 +219,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={onOpenArchive}
             className={`min-h-[44px] px-3 sm:px-3.5 py-2 rounded-md text-xs sm:text-sm font-semibold transition-all select-none cursor-pointer flex items-center justify-center ${
               activeMode === 'archive'
-                ? 'bg-[#ca8a04] text-white shadow-sm'
+                ? 'bg-[#dc2626] text-white shadow-sm'
                 : 'text-gray-400 hover:text-gray-200'
             }`}
           >
