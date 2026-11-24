@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { X } from 'lucide-react';
 import { useModalAccessibility } from '../utils/useModalAccessibility';
 
 export const Footer: React.FC = () => {
@@ -76,9 +77,17 @@ export const Footer: React.FC = () => {
             aria-modal="true"
             aria-labelledby="privacy-modal-title"
             tabIndex={-1}
-            className="bg-[#0e111b] border-2 border-[#262c3e] rounded-lg max-w-md w-full p-6 shadow-2xl text-left focus:outline-none"
+            className="relative bg-[#0e111b] border-2 border-[#262c3e] rounded-lg max-w-md w-full p-6 shadow-2xl text-left focus:outline-none"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Close Button with >= 44x44px touch target */}
+            <button
+              onClick={() => setShowPrivacyModal(false)}
+              className="absolute top-3 right-3 text-gray-400 hover:text-white min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-[#1b1f2e] transition-colors cursor-pointer"
+              aria-label="Close dialog"
+            >
+              <X className="w-5 h-5" />
+            </button>
             <h3 id="privacy-modal-title" className="font-tech text-lg font-bold text-white mb-2">Privacy Policy</h3>
             <p className="text-xs text-gray-300 leading-relaxed mb-4">
               Flashle is an unofficial fan-made daily guessing game. We do not collect, track, or share any personal information. All game progress, daily streaks, and statistics are stored exclusively in your browser’s local storage.
