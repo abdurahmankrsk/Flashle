@@ -224,7 +224,7 @@ describe('Daily Puzzle Determinism & Archive Mode', () => {
     expect(past.character.name.length).toBeGreaterThan(0);
   });
 
-  it('pins Day 46, Day 47, and Day 48 canonically in historical mappings', () => {
+  it('pins Days 46 through 51 canonically in historical mappings', () => {
     expect(HISTORICAL_DAILY_CHARACTERS[46]).toBe('hunter-zolomon');
     const puzzle46 = getDailyCharacter(new Date('2026-11-22T12:00:00Z'));
     expect(puzzle46.dayNumber).toBe(46);
@@ -239,6 +239,21 @@ describe('Daily Puzzle Determinism & Archive Mode', () => {
     const puzzle48 = getDailyCharacter(new Date('2026-11-24T12:00:00Z'));
     expect(puzzle48.dayNumber).toBe(48);
     expect(puzzle48.character.id).toBe('jefferson-jackson');
+
+    expect(HISTORICAL_DAILY_CHARACTERS[49]).toBe('null-meta');
+    const puzzle49 = getDailyCharacter(new Date('2026-11-25T12:00:00Z'));
+    expect(puzzle49.dayNumber).toBe(49);
+    expect(puzzle49.character.id).toBe('null-meta');
+
+    expect(HISTORICAL_DAILY_CHARACTERS[50]).toBe('kara-danvers');
+    const puzzle50 = getDailyCharacter(new Date('2026-11-26T12:00:00Z'));
+    expect(puzzle50.dayNumber).toBe(50);
+    expect(puzzle50.character.id).toBe('kara-danvers');
+
+    expect(HISTORICAL_DAILY_CHARACTERS[51]).toBe('jaco-birch');
+    const puzzle51 = getDailyCharacter(new Date('2026-11-27T12:00:00Z'));
+    expect(puzzle51.dayNumber).toBe(51);
+    expect(puzzle51.character.id).toBe('jaco-birch');
   });
 
   it('generates reverse chronological historical puzzle list up to current date', () => {
