@@ -138,6 +138,7 @@ export const HISTORICAL_DAILY_CHARACTERS: Record<number, string> = {
   49: 'null-meta',
   50: 'kara-danvers',
   51: 'jaco-birch',
+  52: 'caitlin-snow',
 };
 
 export function getDailyCharacter(date: Date = new Date()): {
